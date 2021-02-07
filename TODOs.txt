@@ -1,0 +1,17 @@
+MYSQL edits:
+	ER
+	DDLs
+	Any other sql edits
+
+Member Profile
+	Page to display member info
+	Page stubs for all other functions
+	
+Administration Module
+	Permissions
+	Roles
+	
+Neccessary Views and Forms 
+Business and Data Services
+
+Logical Delete and Physical Delete
