@@ -92,7 +92,7 @@ class Controller extends BaseController
            //return failure page
            return view('auth/register');
         }
-    }
+    }           
     
     public function delete()
     {

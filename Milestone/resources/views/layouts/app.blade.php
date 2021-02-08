@@ -48,9 +48,20 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
+                        @if (isset($user))
+                        <li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="account">Account</a>
+                        </li>
+                        @endif
+                        @if (isset($isAdmin))
+                        	@if ($isAdmin == true)
+                        	<li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="admin">Admin Page</a>
+                            @endif
+                        @endif
                         @guest 
                             <li class="nav-item border border-light rounded-pill">
-                                <a style="color: white" class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                <a style="color: white" class="nav-link" href="login">{{ __('Login') }}</a>
                             </li>
                             @if (Route::has('register'))
                                 <li class="nav-item border border-light rounded-pill">

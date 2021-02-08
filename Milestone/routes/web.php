@@ -18,3 +18,29 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('login', function()
+{
+   return view('auth/login'); 
+});
+
+Route::post('doLogin', 'Controller@login');
+
+Route::get('account', 'Controller@viewAccount');
+
+Route::post('editUser', 'Controller@editUser');
+
+Route::post('register', 'Controller@register');
+
+Route::get('registerpage', function()
+{
+    return view('auth\register');
+});
+
+Route::get('admin', 'Controller@admin');
+
+Route::post('suspend', 'Controller@suspend');
+
+Route::post('delete', 'Controller@delete');
+
+Route::post('restore', 'Controller@restore');
