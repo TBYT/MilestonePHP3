@@ -154,7 +154,7 @@ class Controller extends BaseController
         $this->user->setEmail(request()->get('email'));
         $this->user->setPassword(request()->get('password'));
         $this->user->setState(request()->get('state'));
-        $this->user->setWebLink(request()->get('webLink'));
+        $this->user->setWebLink(request()->get('website'));
         $this->user->setCity(request()->get('city'));
         
         $this->business->updateUser($id, $this->user);

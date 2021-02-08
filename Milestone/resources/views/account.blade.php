@@ -16,9 +16,11 @@
 	<body>
 		
 		@section('content')
-		<div class="center">
-			<h1> Hello {{ $user->getName() }} </h1>
-			<h3> Account Details: </h3>
+		<div class="row justify-content-center">
+        <div class="col-md-8">
+            <div align="center" class="card">
+                <div class="card-header"><h3>Hello, {{ $user->getName() }}</h3></div>
+			<h3> Account Details </h3>
 			
 			<form action="editUser" method="post">
 			{{csrf_field()}}
@@ -40,6 +42,8 @@
 				<br><br><br>
 				<input type="submit" value="Save Changes"/>
 			</form>
+			</div>
+			</div>
 		</div>
 		@endsection
 	</body>
