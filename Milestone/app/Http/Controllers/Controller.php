@@ -54,7 +54,9 @@ class Controller extends BaseController
         else 
         {
             //Take failure message
-            return view('auth\login');
+            $message = "Could Not Login, Try Again";
+            $data = ['message' => $message];
+            return view('auth\login')->with($data);
         }
     }
     
@@ -90,7 +92,9 @@ class Controller extends BaseController
         else 
         {
            //return failure page
-           return view('auth/register');
+            $message = "Could Not Register, You May Have Already Made An Account";
+            $data = ['message' => $message];
+            return view('auth/register')->with($data);
         }
     }           
     
@@ -170,5 +174,12 @@ class Controller extends BaseController
         $data = ['users' => $users];
         
         return view('admin')->with($data);
+    }
+    
+    public function logout()
+    {
+        session()->remove('user');
+        unset($this->user);
+        return view('welcome');
     }
 }

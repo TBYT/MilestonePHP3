@@ -48,18 +48,15 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
+                        <!-- UIFBANEBFNGWIUGBWAIB -->
                         @if (isset($user))
                         <li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="account">Account</a>
                         </li>
-                        @endif
-                        @if (isset($isAdmin))
-                        	@if ($isAdmin == true)
-                        	<li class="nav-item border border-light rounded-pill">
-                                <a style="color: white" class="nav-link" href="admin">Admin Page</a>
-                            @endif
-                        @endif
-                        @guest 
+                        <li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="logout">Log Out</a>
+                        </li>
+                        @else
                             <li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="login">{{ __('Login') }}</a>
                             </li>
@@ -68,25 +65,13 @@
                                     <a style="color: white" class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
                             @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
+                        @endif
+                        @if (isset($isAdmin))
+                        	@if ($isAdmin == true)
+                        	<li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="admin">Admin Page</a>
+                            @endif
+  						@endif
                     </ul>
                 </div>
                 <!--  -->

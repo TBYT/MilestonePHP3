@@ -2,6 +2,9 @@
 
 @section('content')
 <div class="container">
+	@if (isset($message))
+	<h1 style="color:red; text-align:center"> {{ $message }} </h1>
+	@endif
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">

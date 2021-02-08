@@ -44,3 +44,5 @@ Route::post('suspend', 'Controller@suspend');
 Route::post('delete', 'Controller@delete');
 
 Route::post('restore', 'Controller@restore');
+
+Route::get('logout', 'Controller@logout');
