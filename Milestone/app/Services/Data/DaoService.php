@@ -192,7 +192,10 @@ class DaoService
             $user->setPassword($row['password']);
             $user->setIsSuspended($row['tbl_roles_id_role'] == 0);
             
-            $id = $this->getUserID($user); 
+            //have to create new Dao, want to fix this somehow
+            $dao = new DaoService();
+            
+            $id = $dao->getUserID($user); 
             
             //die(print_r($row));
             
