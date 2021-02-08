@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `dbcst256`.`password_resets` (
   `email` VARCHAR(255) NOT NULL,
   `token` VARCHAR(255) NOT NULL,
   `created_at` TIMESTAMP NULL DEFAULT NULL,
-  INDEX `password_resets_email_index` (`email` ASC) VISIBLE)
+  INDEX `password_resets_email_index` (`email` ASC) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `dbcst256`.`user` (
   `field` VARCHAR(45) NULL DEFAULT NULL,
   `picture` VARCHAR(1000) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `users_email_unique` (`email` ASC) VISIBLE)
+  UNIQUE INDEX `users_email_unique` (`email` ASC) )
 ENGINE = InnoDB
 AUTO_INCREMENT = 8
 DEFAULT CHARACTER SET = utf8mb4
