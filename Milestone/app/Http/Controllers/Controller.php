@@ -21,6 +21,7 @@ class Controller extends BaseController
     private $user;
     private $business;
     
+    //Method to log user in
     public function login()
     {
         $this->business = new BusinessService();
@@ -33,24 +34,32 @@ class Controller extends BaseController
         
         $id = (int)$this->business->getUserID($this->user);
         
+        //if 0, the user doesnt' exist
         if ($id != 0)
         {
+            //If the user is active
             if (!$this->business->isSuspended($id))
             {
+                //Get details and store session user
                 $this->user = $this->business->getUserDetails($id); 
                 session()->put('user', $this->user);
                 //die(print_r(session()->get('user')));
                 $isAdmin = $this->business->isAdmin($id);
                 session()->put('isAdmin', $isAdmin);
+                
+                //Return loggedIn veiw with userdata
                 $data = ['isAdmin' => $isAdmin, 'user' => $this->user];
                 return view('home')->with($data);
             }
             
+            //User suspended
             else 
             {
                 return view('suspended');
             }
         }
+        
+        //If the user does not exist or other error
         else 
         {
             //Take failure message
@@ -60,6 +69,7 @@ class Controller extends BaseController
         }
     }
     
+    //Method to register user, very similar to login
     public function register(Request $request)
     {
         $this->business = new BusinessService();
@@ -71,12 +81,15 @@ class Controller extends BaseController
         $this->user->setPassword(request()->get('password'));
         
         $admin = request()->get('role');
+        //Assume they are user, TODO: this will need to be changed 
+        //into switch when more than 2 roles are added
         $isAdmin = false;
         if ($admin == 'admin')
         {
             $isAdmin = true;
         }
         
+        //If they are added
         if ($this->business->addUser($this->user, $isAdmin))
         {
             //Return success page
@@ -154,7 +167,7 @@ class Controller extends BaseController
         $this->user->setEmail(request()->get('email'));
         $this->user->setPassword(request()->get('password'));
         $this->user->setState(request()->get('state'));
-        $this->user->setWebLink(request()->get('webLink'));
+        $this->user->setWebLink(request()->get('website'));
         $this->user->setCity(request()->get('city'));
         
         $this->business->updateUser($id, $this->user);
@@ -171,7 +184,7 @@ class Controller extends BaseController
         
         //die(print_r($users));
         
-        $data = ['users' => $users];
+        $data = ['users' => $users, 'user' => session()->get('user')];
         
         return view('admin')->with($data);
     }
