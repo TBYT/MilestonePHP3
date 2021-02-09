@@ -111,6 +111,7 @@ class Controller extends BaseController
         }
     }           
     
+    //Function to delete user based on id
     public function delete()
     {
         $this->business = new BusinessService();
@@ -123,6 +124,7 @@ class Controller extends BaseController
         return $this->admin();
     }
     
+    //Suspends user based on id
     public function suspend() 
     {
         $this->business = new BusinessService();
@@ -135,6 +137,7 @@ class Controller extends BaseController
         return $this->admin();
     }
     
+    //Restores suspended user based on id
     public function restore()
     {
         $this->business = new BusinessService();
@@ -146,21 +149,27 @@ class Controller extends BaseController
         return $this->admin();
     }
     
+    //Returns the account details page
     public function viewAccount()
     {
         $this->business = new BusinessService();
         
+        //Gets the session user
         $this->user = session()->get('user');
         //die(print_r(session()->get('user')));
+        
         $data = ['user' => $this->user, 'isAdmin' => session()->get('isAdmin')];
         return view('account')->with($data);
     }
     
     //TODO: return success or error message as well
+    //Function to edit user details
     public function editUser()
     {
         $this->business = new BusinessService();
         $this->user = new UserModel();
+        
+        //Get user details
         $id = $this->business->getUserID(session()->get('user'));
         
         $this->user->setName(request()->get('name'));
@@ -169,30 +178,41 @@ class Controller extends BaseController
         $this->user->setState(request()->get('state'));
         $this->user->setWebLink(request()->get('website'));
         $this->user->setCity(request()->get('city'));
-        
+       
+        //Update user
         $this->business->updateUser($id, $this->user);
         
         $data = ['user' => $this->user, 'isAdmin' => session()->get('isAdmin')];
         
+        //Redirect to account page w updated info
         return view('account')->with($data);
     }
     
+    //function shows admin page
     public function admin()
     {
+        //Get all users that aren't admin
         $this->business = new BusinessService();
         $users = $this->business->getAllUsers();
         
         //die(print_r($users));
         
+        
+        //Return view
         $data = ['users' => $users, 'user' => session()->get('user')];
         
         return view('admin')->with($data);
     }
     
+    //Function to logout
     public function logout()
     {
+        //Unset the session user and isAdmin vars
         session()->remove('user');
+        session()->remove('isAdmin');
         unset($this->user);
+        
+        //Return index
         return view('welcome');
     }
 }
