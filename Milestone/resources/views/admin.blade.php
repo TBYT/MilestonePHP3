@@ -8,12 +8,16 @@
 	
 	<body>
 		@section('content')
-		<div style="color:green">
-			<h1>Here is a list of users</h1>
+		<div class="row justify-content-center">
+        <div class="col-md-8">
+            <div align="center" class="card">
+                <div class="card-header"><h3>List of Users.</h3></div>
 			<ul>
 				@foreach ($users as $id => $person)
 				<li>
+				<h4>
 					Name: {{ $person->getName() }}
+					</h4>
 					<form action="delete" method="post">
 						{{csrf_field()}}
 						<input type="hidden" name="id" value="{{ $id }}"/>
@@ -37,6 +41,7 @@
 				</li>
 				@endforeach
 			</ul>
+			</div>
 		</div>
 		@endsection
 	</body>
