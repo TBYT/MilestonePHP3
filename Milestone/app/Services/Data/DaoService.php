@@ -110,8 +110,10 @@ class DaoService
      */
     public function deleteUser(int $id)
     {
-        $sql = "DELETE user 
+        $sql = "DELETE FROM user 
                 WHERE id = '$id'";
+        
+        //die($sql);
         
         mysqli_query($this->conn, $sql);
         $success = (mysqli_affected_rows($this->conn) > 0);

@@ -59,3 +59,8 @@ Route::post('restore', 'Controller@restore');
 
 //Logs out the active user
 Route::get('logout', 'Controller@logout');
+
+Route::get('contact', function()
+{
+   return view('contact'); 
+});
