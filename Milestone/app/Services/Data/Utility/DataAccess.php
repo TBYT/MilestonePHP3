@@ -15,16 +15,16 @@ class DataAccess
     public function __construct(string $db)
     {
         $this->db = $db;
-        $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->db);
     }
     
+    //Refresh connection and return it
     public function getConnection()
     {
         $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->db);
-        $this->conn->ping();
         return $this->conn;
     }
     
+    //Turn on and off autocommit
     public function setAutocommit(bool $autocommit)
     {
         $this->conn->autocommit($autocommit);
