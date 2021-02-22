@@ -19,7 +19,7 @@
 		<div class="row justify-content-center">
         <div class="col-md-8">
             <div align="center" class="card">
-                <div class="card-header"><h3>Hello, {{ $user->getName() }}</h3></div>
+                <div class="card-header"><h3>Hello, {{ session()->get('user')->getName() }}</h3></div>
 			<h3> Account Details </h3>
 			
 			<form action="editUser" method="post">

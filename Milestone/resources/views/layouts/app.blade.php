@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- CSRF Token -->
+    <!-- CSRF Token-->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>EPortfolio</title>
@@ -48,29 +48,27 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
-                        <!-- UIFBANEBFNGWIUGBWAIB -->
-                        @if (isset($user))
+                        @if (session()->get('user'))
                         <li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="account">Account</a>
                         </li>
                         <li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="logout">Log Out</a>
                         </li>
+                        <li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="home">Home</a>
+                        </li>
                         @else
                             <li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="login">{{ __('Login') }}</a>
                             </li>
-                            @if (Route::has('register'))
-                                <li class="nav-item border border-light rounded-pill">
-                                    <a style="color: white" class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
+                            <li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="register">{{ __('Register') }}</a>
+                            </li>
                         @endif
-                        @if (isset($isAdmin))
-                        	@if ($isAdmin == true)
+                        @if (session()->get('isAdmin'))
                         	<li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="admin">Admin Page</a>
-                            @endif
   						@endif
                     </ul>
                 </div>

@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * Author: Thomas Biegel
+ * CST-256
+ * 2.8.21
+ */
+
 namespace App\Models;
 
 class UserModel

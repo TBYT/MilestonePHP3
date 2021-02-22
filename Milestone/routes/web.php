@@ -11,15 +11,23 @@
 |
 */
 
+
+/*
+|--------------------------------------------------------------------------
+| Standard URL navigation
+|--------------------------------------------------------------------------
+*/
+
 //Index Page
 Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
-
-//loggedIn page
-Route::get('/home', 'HomeController@index')->name('home');
+//loggedIn home page
+Route::get('/home', function()
+{
+   return view('home'); 
+});
 
 //login page
 Route::get('login', function()
@@ -27,40 +35,73 @@ Route::get('login', function()
    return view('auth/login'); 
 });
 
-//function for managing login  requests
-Route::post('doLogin', 'Controller@login');
-
-//account details page
-Route::get('account', 'Controller@viewAccount');
-
-//edit user details
-Route::post('editUser', 'Controller@editUser');
-
-//manages registration requests
-Route::post('register', 'Controller@register');
-
 //register page
-Route::get('registerpage', function()
+Route::get('register', function()
 {
     return view('auth\register');
 });
 
-//shows the admin page
-Route::get('admin', 'Controller@admin');
+//admin page
+Route::get('admin', function(){
+    return view('admin\adminactions');
+});
+
+//addJob page
+Route::get('newjob', function () {
+    return view('admin\newjob');
+});
+
+//contact page
+Route::get('contact', function () {
+    return view('contact');
+});
+
+/*
+|--------------------------------------------------------------------------
+| User Controller Routes
+|--------------------------------------------------------------------------
+ */
+
+Route::get('/roles', 'UserController@manageRoles');
 
 //Suspends a user
-Route::post('suspend', 'Controller@suspend');
+Route::post('suspend', 'UserController@suspend');
 
 //Deletes a user
-Route::post('delete', 'Controller@delete');
+Route::post('delete', 'UserController@delete');
 
 //Restores a user
-Route::post('restore', 'Controller@restore');
+Route::post('restore', 'UserController@restore');
 
 //Logs out the active user
-Route::get('logout', 'Controller@logout');
+Route::get('logout', 'UserController@logout');
 
-Route::get('contact', function()
-{
-   return view('contact'); 
-});
+//manages login requests
+Route::post('doLogin', 'UserController@login');
+
+//account details page
+Route::get('account', 'UserController@viewAccount');
+
+//edit user details
+Route::post('editUser', 'UserController@editUser');
+
+//manages registration requests
+Route::post('register', 'UserController@register');
+
+Route::get('portfoliorequest', 'UserController@viewRequests');
+
+Route::post('approverequest', 'UserController@approveRequest');
+
+Route::post('denyrequest', 'UserController@denyRequest');
+
+//Displays an account update request for a single user
+Route::post('displayuser', 'UserController@displayUserRequest');
+
+/*
+|--------------------------------------------------------------------------
+| Job Controller Routes
+|--------------------------------------------------------------------------
+ */
+
+//Route for handling the addjob form
+Route::post('addjob', 'JobController@add');
