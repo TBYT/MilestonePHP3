@@ -1,23 +1,18 @@
 <?php
-
-/**
- * Author: Thomas Biegel
- * CST-256
- * 2.8.21
- */
-
 namespace App\Services\Business;
 
-use App\Services\Data\UserDataService;
-use App\Services\Data\JobDataService;
+use App\Services\Data\DaoService;
 use App\Models\UserModel;
-use App\Models\JobModel;
-use App\Services\Data\Utility\DataAccess;
-use App\Models\PortfolioModel;
 
 //Business service class, transfers data from dao to controller
 class BusinessService
 {
+    //dao object
+    private $dao;
+    
+    public function __construct()
+    {
+    }
     
     /**
      * adds the user
@@ -27,13 +22,8 @@ class BusinessService
      */
     public function addUser(UserModel $user, bool $isAdmin)
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        
-        $success = $userdao->addUser($user, $isAdmin);
-        $dbAccess->closeConnection();
-        return $success;
+        $this->dao = new DaoService();
+        return $this->dao->addUser($user, $isAdmin);
     }
     
     /**
@@ -44,14 +34,8 @@ class BusinessService
      */
     public function updateUser(int $id, UserModel $user)
     { 
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        
-        $success = $userdao->updateUser($id, $user);
-        $dbAccess->closeConnection();
-        
-        return $success;
+        $this->dao = new DaoService();
+        return $this->dao->updateUser($id, $user);
     }
     
     /**
@@ -60,12 +44,8 @@ class BusinessService
      */
     public function suspendUser(int $id)
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        
-        $userdao->suspendUser($id);
-        $dbAccess->closeConnection();
+        $this->dao = new DaoService();
+        $this->dao->suspendUser($id);
     }
     
     /**
@@ -74,12 +54,8 @@ class BusinessService
      */
     public function deleteUser(int $id)
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        
-        $userdao->deleteUser($id);
-        $dbAccess->closeConnection();
+        $this->dao = new DaoService();
+        $this->dao->deleteUser($id);
     }
     
     /**
@@ -89,12 +65,8 @@ class BusinessService
      */
     public function isAdmin(int $id)
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        $isAdmin = $userdao->isAdmin($id);
-        $dbAccess->closeConnection();
-        return $isAdmin;
+        $this->dao = new DaoService();
+        return $this->dao->isAdmin($id);
     }
     
     /**
@@ -104,11 +76,8 @@ class BusinessService
      */
     public function getUserID(UserModel $user)
     {
-        $dbConn = new DataAccess("dbcst256");
-        $userdao = new UserDataService($dbConn->getConnection());
-        $id = $userdao->getUserID($user);
-        $dbConn->closeConnection();
-        return $id;
+        $this->dao = new DaoService();
+        return $this->dao->getUserID($user);
     }
     
     /**
@@ -117,11 +86,8 @@ class BusinessService
      */
     public function restoreUser(int $id)
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        $userdao->restoreUser($id);
-        $dbAccess->closeConnection();
+        $this->dao = new DaoService();
+        $this->dao->restoreUser($id);
     }
     
     /**
@@ -131,12 +97,8 @@ class BusinessService
      */
     public function getUserDetails($id)
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        $user = $userdao->getUserDetails($id);
-        $dbAccess->closeConnection();
-        return $user;
+        $this->dao = new DaoService();
+        return $this->dao->getUserDetails($id);
     }
     
     /**
@@ -145,12 +107,8 @@ class BusinessService
      */
     public function getAllUsers()
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        $users = $userdao->getAllUsers();
-        $dbAccess->closeConnection();
-        return $users;
+        $this->dao = new DaoService();
+        return $this->dao->getAllUsers();
     }
     
     /**
@@ -160,81 +118,8 @@ class BusinessService
      */
     public function isSuspended(int $id)
     {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        $isSuspended = $userdao->isSuspended($id);
-        $dbAccess->closeConnection();
-        return $isSuspended;
-    }
-    
-    public function addJob(JobModel $job)
-    {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        $success = $userdao->addJob($job);
-        $dbAccess->closeConnection();
-        return $success;
-    }
-    
-    public function getAllJobs()
-    {
-        $dbAccess = new DataAccess("dbcst256");
-        $conn = $dbAccess->getConnection();
-        $jobsdao = new JobDataService($conn);
-        $jobs = $jobsdao->getAllJobs();
-        $dbAccess->closeConnection();
-        return $jobs;
-    }
-    
-    
-    public function getReviewRequests()
-    {
-        //TODO: uncomment this whent the real functionality is implemented
-//         $dbAccess = new DataAccess("dbcst256");
-//         $conn = $dbAccess->getConnection();
-//         $userdao = new UserDataService($conn);
-        
-//         $ids = $userdao->getAllRequests();
-        
-//         $users = array();
-        
-//         foreach ($ids as $id)
-//         {
-//             $name = $userdao->getUserDetails($id)['name'];
-//             $users[$id] = $name;
-//         }
-        
-//         $dbAccess->closeConnection();
-//         return $users;
-        
-        $users = array();
-        $users = [1 => 'Thomas', 2 => 'Brian', 3 => 'MisterGuy'];
-        return $users;
-    }
-    
-    public function findPortfolioRequestByID($id)
-    {
-//         $dbAccess = new DataAccess("dbcst256");
-//         $conn = $dbAccess->getConnecction();
-//         $userdao = new UserDataService($conn);
-        
-//         $request = $userdao->findRequestByID($id);
-        
-//         $dbAccess->closeConnection();
-        
-//         return $request;
-
-        $portfolio = new PortfolioModel();
-        $portfolio->addEducation('test');
-        $portfolio->addEducation('test2');
-        $portfolio->addHistory('myFirstJob');
-        $portfolio->addHistory('mySecondJob');
-        $portfolio->addSkill('programming');
-        $portfolio->addSkill('chess');
-        
-        return $portfolio;
+        $this->dao = new DaoService();
+        return $this->dao->isSuspended($id);
     }
 }
 
