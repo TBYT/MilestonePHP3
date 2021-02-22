@@ -410,5 +410,15 @@ class BusinessService
         //Return success var
         return true;
     }
+    
+    //Will need to also make both of these, need the view first
+    public function editPortfolio(PortfolioModel $portfolio, int $id)
+    {
+        
+    }
+    
+    public function searchPortfolio(string $searchTerm, string $pattern)
+    {
+    }
 }
 
