@@ -13,7 +13,7 @@
 								<label for="roles">Suspend or update users</label><br>
             					<button id="roles">User Roles</button>
             				</form>
-            				<form method="get" action="newjob">
+            				<form method="get" action="showalljobs">
             					<label for="job">Add or edit job listings</label><br>
             					<button id="job">Job Listings</button>
             				</form>

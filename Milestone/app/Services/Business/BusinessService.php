@@ -173,8 +173,8 @@ class BusinessService
     {
         $dbAccess = new DataAccess($this->dbname);
         $conn = $dbAccess->getConnection();
-        $userdao = new UserDataService($conn);
-        $success = $userdao->addJob($job);
+        $jobsdao = new JobDataService($conn);
+        $success = $jobsdao->addJob($job);
         $dbAccess->closeConnection();
         return $success;
     }
@@ -186,9 +186,44 @@ class BusinessService
         $jobsdao = new JobDataService($conn);
         $jobs = $jobsdao->getAllJobs();
         $dbAccess->closeConnection();
+        //die(print_r($jobs));
         return $jobs;
     }
     
+    public function deleteJob(int $id)
+    {
+        $dbAccess = new DataAccess($this->dbname);
+        $conn = $dbAccess->getConnection();
+        $jobsdao = new JobDataService($conn);
+        $jobsdao->deleteJob($id);
+        
+        $dbAccess->closeConnection();
+    }
+    
+    public function getJob(int $id)
+    {
+        $dbAccess = new DataAccess($this->dbname);
+        $conn = $dbAccess->getConnection();
+        $jobsdao = new JobDataService($conn);
+        $job = $jobsdao->findByID($id);
+        
+        $dbAccess->closeConnection();
+        
+        return $job;
+    }
+    
+    public function editJob(JobModel $job, int $id)
+    {
+        $dbAccess = new DataAccess($this->dbname);
+        $conn = $dbAccess->getConnection();
+        $jobsdao = new JobDataService($conn);
+        
+        $success = $jobsdao->updateJob($job, $id);
+        
+        $dbAccess->closeConnection();
+        
+        return $success;
+    }
     
     public function getReviewRequests()
     {

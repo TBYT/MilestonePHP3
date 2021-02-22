@@ -105,3 +105,11 @@ Route::post('displayuser', 'UserController@displayUserRequest');
 
 //Route for handling the addjob form
 Route::post('addjob', 'JobController@add');
+
+Route::get('showalljobs', 'JobController@showAll');
+
+Route::post('deletejob', 'JobController@delete');
+
+Route::post('editjob', 'JobController@edit');
+
+Route::post('doeditjob', 'JobController@doEdit');
