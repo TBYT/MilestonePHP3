@@ -56,6 +56,16 @@ Route::get('contact', function () {
     return view('contact');
 });
 
+Route::get('jobsearch', function()
+{
+    return view('jobsearch');
+});
+
+Route::get('portfoliosearch', function()
+{
+   return view('searchportfolios'); 
+});
+
 /*
 |--------------------------------------------------------------------------
 | User Controller Routes
@@ -113,3 +123,21 @@ Route::post('deletejob', 'JobController@delete');
 Route::post('editjob', 'JobController@edit');
 
 Route::post('doeditjob', 'JobController@doEdit');
+
+Route::post('searchjobs', 'JobController@search');
+
+Route::post('viewjob', 'JobController@view');
+
+/*
+ |--------------------------------------------------------------------------
+ | Portfolio Controller Routes
+ |--------------------------------------------------------------------------
+ */
+
+Route::post('searchportfolios', 'PortfolioController@search');
+
+//edit portfolio page
+Route::post('editPortfolio', 'PortfolioController@editPortfolio');
+
+//view portfolio details
+Route::get('portfolio', 'PortfolioController@viewPortfolio');

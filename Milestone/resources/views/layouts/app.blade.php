@@ -50,14 +50,27 @@
                         <!-- Authentication Links -->
                         @if (session()->get('user'))
                         <li class="nav-item border border-light rounded-pill">
-                                <a style="color: white" class="nav-link" href="account">Account</a>
-                        </li>
-                        <li class="nav-item border border-light rounded-pill">
-                                <a style="color: white" class="nav-link" href="logout">Log Out</a>
-                        </li>
-                        <li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="home">Home</a>
                         </li>
+                        <li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="jobsearch">Search Jobs</a>
+                        </li>
+                        <li class="nav-item border border-light rounded-pill">
+                                <a style="color: white" class="nav-link" href="portfoliosearch">Search Portfolios</a>
+                        </li>
+                         <div class="dropdown">
+  						<button class="btn btn-secondary dropdown-toggle nav-item border border-light rounded-pill" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    					Account
+  						</button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          @if (session()->get('isAdmin'))
+                            <a class="dropdown-item" href="admin">Admin</a>
+                            @endif
+                            <a class="dropdown-item" href="account">Settings</a>
+                            <a class="dropdown-item" href="portfolio">Portfolio</a>
+                            <a class="dropdown-item" href="logout">Log Out</a>
+                          </div>
+                        </div>
                         @else
                             <li class="nav-item border border-light rounded-pill">
                                 <a style="color: white" class="nav-link" href="login">{{ __('Login') }}</a>
@@ -66,10 +79,6 @@
                                 <a style="color: white" class="nav-link" href="register">{{ __('Register') }}</a>
                             </li>
                         @endif
-                        @if (session()->get('isAdmin'))
-                        	<li class="nav-item border border-light rounded-pill">
-                                <a style="color: white" class="nav-link" href="admin">Admin Page</a>
-  						@endif
                     </ul>
                 </div>
                 <!--  -->

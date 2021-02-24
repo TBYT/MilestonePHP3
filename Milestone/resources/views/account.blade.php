@@ -1,5 +1,8 @@
+<!-- Page to display user account -->
+
 <html>
 
+<!-- CSS for this file (Should maybe be put in layouts folder?) -->
 <style>
     .center
     {
@@ -24,18 +27,28 @@
 			
 			<form action="editUser" method="post">
 			{{csrf_field()}}
+			
+				<!-- Begin Name -->
 				<label for="name">Full Name:</label>
-				<input type="text" value="{{ $user->getName() }}" name="name" id="name"/><br>
+				<input type="text" value="{{ $user->getName() }}" name="name" id="name" required/><br>
+				
+				<!-- Begin Email -->
 				<label for="email">Email:</label>
-				<input type="text" value="{{ $user->getEmail() }}" name="email" id="email"/><br>
+				<input type="email" value="{{ $user->getEmail() }}" name="email" id="email" required/><br>
+				
+				<!-- Begin Password (Change this??) -->
 				<label for="password">Password:</label>
-				<input type="text" value="{{ $user->getPassword() }}" name="password" id="password"/><br>
-				<!-- <label for="field">Professsional Field:</label>
-				<a type="text" value="{{ $user->getField() }}" name="field" id="field"/><br> -->
+				<input type="text" value="{{ $user->getPassword() }}" name="password" id="password" required/><br>
+				
+				<!-- Begin Website Link -->
 				<label for="website">Website Link:</label>
-				<input type="text" value="{{ $user->getWebLink() }}" name="website" id="website"/><br>
+				<input type="url" value="{{ $user->getWebLink() }}" name="website" id="website"/><br>
+				
+				<!-- Begin City -->
 				<label for="city">City:</label>
 				<input type="text" value="{{ $user->getCity() }}" name="city" id="city"/><br>
+				
+				<!-- Begin State -->
 				<label for="state">State:</label>
 				<input type="text" value="{{ $user->getState() }}" name="state" id="state"/><br>
 				

@@ -1,3 +1,5 @@
+<!-- This page has not yet been implemented -->
+
 @extends('layouts/app')
 
 @section('content')

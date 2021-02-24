@@ -2,7 +2,7 @@
 /**
  * Author: Thomas Biegel
  * CST-256
- * 2.8.21
+ * 2.21.21
  */
 
 namespace App\Http\Controllers;
@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use App\Models\JobModel;
 use App\Services\Business\BusinessService;
 
@@ -25,9 +26,13 @@ class JobController extends BaseController
     //Function to add a job
     public function add()
     {
+        //Initialize business service and job
         $this->businessService = new BusinessService();
         $this->job = new JobModel();
         
+        $this->validateForm(request());
+        
+        //Fill job data
         $title = request()->get('title');
         $company = request()->get('company');
         $salary = request()->get('salary');
@@ -40,16 +45,21 @@ class JobController extends BaseController
         $this->job->initialize($title, $company, $salary, $field, 
             $skills, $experience, $location, $description);
         
+        //default result is error
         $message = "Job could not be added. It may already exist"; 
         
+        //Try to add the job
         if ($this->businessService->addJob($this->job))
         {
             $message = "Job Added!";
         }
+        
+        //Return view
         $data =  ['message' => $message];
         return view('admin\newjob')->with($data);
     }
     
+    //Function to show all jobs to the admin
     public function showAll()
     {
         $this->businessService = new BusinessService();
@@ -60,11 +70,14 @@ class JobController extends BaseController
         return view('admin\alljobs')->with($data);
     }
     
+    //Function to delete a job
     public function delete()
     {
+        //Initialize business service and delete job
         $this->businessService = new BusinessService();
         $this->businessService->deleteJob(request()->get('id'));
         
+        //Rerun the get all jobs page wtih updated list of jobs
         $jobs = $this->businessService->getAllJobs();
         
         $data = [
@@ -75,12 +88,19 @@ class JobController extends BaseController
         return view('admin\alljobs')->with($data);
     }
     
+    
+    //Function to edit a job's details
     public function doEdit()
     {
+        //Initialize business layer and job 
         $this->businessService = new BusinessService();
         
         $this->job = new JobModel();
         
+        //Validate 
+        $this->validateForm(request());
+        
+        //Fill job details
         $title = request()->get('title');
         $company = request()->get('company');
         $salary = request()->get('salary');
@@ -93,8 +113,10 @@ class JobController extends BaseController
         $this->job->initialize($title, $company, $salary, $field,
             $skills, $experience, $location, $description);
         
+        //Run business layer function
         $success = $this->businessService->editJob($this->job, request()->get('id'));
         
+        //Return the show all jobs page
         $jobs = $this->businessService->getAllJobs();
         
         $message = 'Job could not be updated';
@@ -111,8 +133,10 @@ class JobController extends BaseController
         return view('admin\alljobs')->with($data);
     }
     
+    //Function to edit a job
     public function edit()
     {
+        //Initialize the business layer and job
         $this->businessService = new BusinessService();
         $this->job = $this->businessService->getJob(request()->get('id'));
         
@@ -123,5 +147,59 @@ class JobController extends BaseController
         ];
         
         return view('admin\editjob')->with($data);
+    }
+    
+    //Function to search for jobs
+    public function search()
+    {
+        //Initialize business layer
+        $this->businessService = new BusinessService();
+        
+        //Run the search method
+        $jobs = $this->businessService->searchJobs(request()->get('searchTerm'), request()->get('pattern'));
+        
+        
+        //TOOD: this won't order or reflect the property selected in the initial search
+        $data = [
+            'jobs' => $jobs
+        ];
+        
+        //die(print_r($jobs));
+        
+        //Return results
+        return view('jobsearchresults')->with($data);
+        
+    }
+    
+    public function view()
+    {
+        //Initialize the business layer and job
+        $this->businessService = new BusinessService();
+        $this->job = $this->businessService->getJob(request()->get('id'));
+        
+        //Should use flash here, but I am lazy and don't have a lot of practice with it
+        $data = [
+            'job' => $this->job,
+            'id' => request()->get('id')
+        ];
+        
+        return view('viewjob')->with($data);
+    }
+    
+    private function validateForm(Request $request)
+    {
+        $rules = [
+            'title' => 'Required | Between: 8,30 | Alpha',
+            'company' => 'Required | Between: 4, 10',
+            'salary' => 'Required | Alpha_Num | Between: 4, 7',
+            'field' => 'Required | Between: 5,30 | Alpha',
+            'skills' => 'Required | Between: 8,30 | Alpha',
+            'experience' => 'Required | Between: 2,20| Alpha_Num',
+            'location' => 'Required | Between: 5,30 | Alpha',
+            'description' => 'Required | Between: 10,250 | Alpha',
+        ];
+        
+        //Run Data Validation Rules
+        $this->validate($request, $rules);
     }
 }

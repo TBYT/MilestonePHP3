@@ -71,7 +71,7 @@ class PortfolioModel
         array_push($this->skills, $item);
     }
     
-    public function addEducation(string $item)
+    public function addEducation(array $item)
     {
         array_push($this->education, $item);
     }

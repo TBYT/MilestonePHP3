@@ -3,7 +3,7 @@
 /**
  * Author: Thomas Biegel
  * CST-256
- * 2.8.21
+ * 2.23.21
  */
 
 namespace App\Http\Controllers;
@@ -215,6 +215,8 @@ class UserController extends BaseController
         return view('welcome');
     }
     
+    
+    //FUNCTIONS BELOW NOT IMPLEMENTED YET
     public function displayUserRequest()
     {
         $id = request()->get('id');

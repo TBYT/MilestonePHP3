@@ -1,7 +1,13 @@
 <?php
+
+/*
+ * Job DAO
+ * Author:Thomas Biegel
+ * 2.21.21
+ */
+
 namespace App\Services\Data;
 
-use App\Services\Data\Utility\DataAccess;
 use App\Models\JobModel;
 
 class JobDataService

@@ -3,7 +3,7 @@
 /**
  * Author: Thomas Biegel
  * CST-256
- * 2.8.21
+ * 2.23.21
  */
 
 namespace App\Services\Business;
@@ -14,12 +14,12 @@ use App\Models\UserModel;
 use App\Models\JobModel;
 use App\Services\Data\Utility\DataAccess;
 use App\Models\PortfolioModel;
-use App\User;
+use App\Services\Data\PortfolioDataService;
 
 //Business service class, transfers data from dao to controller
 class BusinessService
 {
-    private $dbname = "dbcst256";
+    private $dbname = "test";
     
 /*******************************************************************
  * User Functions
@@ -181,6 +181,31 @@ class BusinessService
         return $isSuspended;
     }
     
+    //Function to search through the users by name
+    public function searchByName(string $pattern)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        
+        $userDAO = new UserDataService($dbConn->getConnection());
+        
+        //Returns a list of users
+        $users = $userDAO->searchUsers($pattern);
+        
+        $list = array();
+        
+        //Get User ID
+        foreach($users as $user)
+        {
+            $id = $userDAO->getUserID($user);
+            $list[$id] = $user;
+        }
+        
+        $dbConn->closeConnection();
+        
+        //List is an associative array of userIds mapped to full names
+        return $list;
+    }
+    
     /*******************************************************************
      * Job Functions
      *******************************************************************/    
@@ -318,6 +343,11 @@ class BusinessService
         return $users;
     }
     
+    
+    /*******************************************************************
+     * Portfolio Functions
+     *******************************************************************/ 
+    
     /**
      * Grabs a specific portfolio request
      * @param int $id the user id of the portfolio
@@ -377,10 +407,6 @@ class BusinessService
         $dbAccess->closeConnection();
     }
     
-    /*******************************************************************
-     * Portfolio Functions
-     *******************************************************************/  
-    
     /**
      * Function to add a portfolio 
      * @param PortfolioModel $portfolio The portfolio to be added
@@ -411,14 +437,134 @@ class BusinessService
         return true;
     }
     
-    //Will need to also make both of these, need the view first
-    public function editPortfolio(PortfolioModel $portfolio, int $id)
-    {
+//     public function getPortfolioDetails($id)
+//     {
+//         $dbAccess = new DataAccess($this->dbname);
+//         $conn = $dbAccess->getConnection();
+//         $portdao = new PortfolioDataService($conn);
         
-    }
+//         $details = $portdao->getPortfolioDetails($id);
+        
+//         $model = new PortfolioModel();
+        
+//         //
+//         foreach ($details['education'] as $education)
+//         {
+//             $model->addEducation($education);
+//         }
+        
+//         foreach ($details['history'] as $history)
+//         {
+//             $model->addHistory($history);
+//         }
+        
+//         foreach ($details['skills'] as $skills)
+//         {
+//             $model->addSkill($skills);
+//         }
+        
+//         $dbAccess->closeConnection();
+        
+//         return $model;
+//     }
     
-    public function searchPortfolio(string $searchTerm, string $pattern)
-    {
+//     /**
+//      * updates the given portfolio
+//      * @param int $id the id of the user to be updated
+//      * @param UserModel $user the new user details
+//      * @return boolean whether the user was successfuly updated
+//      */
+//     public function updatePortfolio(int $id, PortfolioModel $user)
+//     {
+//         $dbAccess = new DataAccess($this->dbname);
+//         $conn = $dbAccess->getConnection();
+//         $userdao = new PortfolioDataService($conn);
+        
+//         $success = $userdao->updatePortfolio($id, $user);
+//         $dbAccess->closeConnection();
+        
+//         return $success;
+//     }
+    
+//     /**
+//      * gets the id of the specified user, used for logging in
+//      * @param UserModel $user the user credentials to pass in
+//      * @return number| the id of the user found, 0 if failure
+//      */
+//     public function getPortfolioID($id)
+//     {
+//         $dbConn = new DataAccess($this->dbname);
+//         $userdao = new PortfolioDataService($dbConn->getConnection());
+//         $id = $userdao->getPortfolioID($id);
+//         $dbConn->closeConnection();
+//         return $id;
+//     }
+       
+        
+        /*
+         * Gets the portfolio details and updates the portfolio model when returned from the database.
+         */
+        public function getPortfolioDetails($id, $portid)
+        {
+            $dbAccess = new DataAccess($this->dbname);
+            $conn = $dbAccess->getConnection();
+            $portdao = new PortfolioDataService($conn);
+            
+            $details = $portdao->getPortfolioDetails($id, $portid);
+            
+            $model = new PortfolioModel();
+            
+            //ForEach statements to add data to the model
+            foreach ($details['education'] as $education)
+            {
+                $model->addEducation($education);
+            }
+            
+            foreach ($details['history'] as $history)
+            {
+                $model->addHistory($history);
+            }
+            
+            foreach ($details['skills'] as $skills)
+            {
+                $model->addSkill($skills);
+            }
+            
+            $dbAccess->closeConnection();
+            
+            return $model;
+        }
+        
+        /**
+         * updates the given portfolio
+         * @param int $id the id of the user to be updated
+         * @param UserModel $user the new user details
+         * @return boolean whether the user was successfuly updated
+         */
+        public function updatePortfolio(int $id, PortfolioModel $user)
+        {
+            $dbAccess = new DataAccess($this->dbname);
+            $conn = $dbAccess->getConnection();
+            $portdao = new PortfolioDataService($conn);
+            
+            $success = $portdao->updatePortfolio($id, $user);
+            $dbAccess->closeConnection();
+            
+            return $success;
+        }
+        
+        /**
+         * gets the id of the specified user, used for logging in
+         * @param UserModel $user the user credentials to pass in
+         * @return number| the id of the user found, 0 if failure
+         */
+        public function getPortfolioID($id)
+        {
+            $dbConn = new DataAccess($this->dbname);
+            $userdao = new PortfolioDataService($dbConn->getConnection());
+            $id = $userdao->getPortfolioID($id);
+            $dbConn->closeConnection();
+            return $id;
+        }
     }
-}
 

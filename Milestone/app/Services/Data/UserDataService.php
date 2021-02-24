@@ -3,7 +3,7 @@
 /**
  * Author: Thomas Biegel
  * CST-256
- * 2.8.21
+ * 2.22.21
  */
 
 namespace App\Services\Data;
@@ -272,13 +272,52 @@ class UserDataService
         return $isSuspended;
     }
     
+    /**
+     * search through the users by the specified name
+     * TODO: improve, include all properties
+     * @param string $pattern
+     * @return array
+     */
+    public function searchUsers(string $pattern)
+    {
+        //Craft and query sql
+        $sql = "SELECT * FROM user WHERE name LIKE '%$pattern%'";
+        $result = $this->conn->query($sql);
+        
+        //Intialize return array
+        $users = array();
+        
+        //Grab each matching user
+        while ($row = $result->fetch_assoc())
+        {
+            $user = new UserModel();
+            
+            $user->setName($row['name']);
+            $user->setEmail($row['email']);
+            $user->setPassword($row['password']);
+            $user->setCity($row['city']);
+            $user->setState($row['state']);
+            $user->setField($row['field']);
+            $user->setPicture($row['picture']);
+            $user->setBio($row['bio']);
+            $user->setWebLink($row['website']);
+            $user->setIsSuspended($row['tbl_roles_id_role'] == 0);
+            
+            array_push($users, $user);
+        }
+        
+        //Return array
+        return $users;
+    }
+    
+    //FUNCTIONS NOT IMPLEMENTED YET
     //There is an item in the request table
     //It needs to be copied to the portfolio table
     
     public function approveRequest($id)
     {
         $sql = "SELECT (education_id, skill_id, history_id)
-                FROM requests 
+                FROM requests
                 WHERE id = '$id'";
         
         $educationID = -1;
@@ -296,12 +335,12 @@ class UserDataService
         }
         else return false;
         
-        $sql = "UPDATE portfolio 
+        $sql = "UPDATE portfolio
                 SET education_id = '$educationID',
                 history_id = '$historyID',
-                skill_id = '$skillID' 
+                skill_id = '$skillID'
                 WHERE user_id = '$id'";
-         
+        
         $this->conn->query($sql);
         
         $sql = "DELETE FROM request
@@ -337,7 +376,7 @@ class UserDataService
         {
             $id = $row['user_id'];
             
-            //Apparently using array_push takes longer, 
+            //Apparently using array_push takes longer,
             //but the other methods I found were giving warnings, so I used it
             array_push($users, $id);
         }
@@ -345,4 +384,5 @@ class UserDataService
         $this->conn->free_result();
         return $users;
     }
+    
 }
