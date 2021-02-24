@@ -19,7 +19,7 @@ use App\Services\Data\PortfolioDataService;
 //Business service class, transfers data from dao to controller
 class BusinessService
 {
-    private $dbname = "test";
+    private $dbname = "dbcst256";
     
 /*******************************************************************
  * User Functions
