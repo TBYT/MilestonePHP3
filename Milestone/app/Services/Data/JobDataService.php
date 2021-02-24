@@ -69,7 +69,7 @@ class JobDataService
             $job->setSalary($row['salary']);
             
             //Add job to the array, with its id as the index
-            $jobs[$row['id']] = $job;
+            $jobs[$row['idjobs']] = $job;
         }
         
         //Free the result and return the array
@@ -84,7 +84,7 @@ class JobDataService
     public function deleteJob(int $id)
     {
         $sql = "DELETE FROM job
-                WHERE id = '$id'";
+                WHERE idjobs = '$id'";
         
         $this->conn->query($sql);
     }
@@ -97,7 +97,7 @@ class JobDataService
     public function findByID(int $id)
     {
         $sql = "SELECT * FROM job
-                WHERE id = '$id'";
+                WHERE idjobs = '$id'";
         
         $result = $this->conn->query($sql);
         
@@ -151,7 +151,7 @@ class JobDataService
     {
         //search term is the collumn name, pattern is its value
         $sql = "SELECT * FROM `job`
-                WHERE $searchTerm LIKE '$pattern'";
+                WHERE $searchTerm LIKE '%$pattern%'";
         
         //die($sql);
         
@@ -175,7 +175,7 @@ class JobDataService
                 $job->setSalary($row['salary']);
                 
                 //Put the job into the array with its id as an index
-                $jobs[$row['id']] = $job;
+                $jobs[$row['idjobs']] = $job;
         }
             
         //Free the result and return the array
