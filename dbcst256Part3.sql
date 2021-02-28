@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `dbcst256`.`user` (
                 -- Table `dbcst256`.`job`
                 -- -----------------------------------------------------
                 CREATE TABLE IF NOT EXISTS `dbcst256`.`job` (
-                    `id` INT(11) NOT NULL AUTO_INCREMENT,
+                    `idjobs` INT(11) NOT NULL AUTO_INCREMENT,
                     `title` VARCHAR(45) NULL DEFAULT NULL,
                     `company` VARCHAR(45) NULL DEFAULT NULL,
                     `salary` INT(11) NULL DEFAULT NULL,
