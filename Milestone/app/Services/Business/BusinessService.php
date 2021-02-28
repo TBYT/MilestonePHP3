@@ -300,13 +300,25 @@ class BusinessService
      * @param string $pattern the string to match the job results to
      * @return JobModel[] the list of jobs matching the search
      */
-    public function searchJobs(string $searchTerm, string $pattern)
+    public function searchJobs($properties)
     {
         $dbAccess = new DataAccess($this->dbname);
         $conn = $dbAccess->getConnection();
         $jobsdao = new JobDataService($conn);
         
-        $jobs = $jobsdao->search($searchTerm, $pattern);
+        $jobs = array();
+        
+        foreach($properties as $name => $value)
+        {
+            if ($value!=null)
+            {
+                foreach($jobsdao->search($name, $value) as $job)
+                {
+                    array_push($jobs, $job);
+                }
+            }
+        }
+        
         return $jobs;
     }
     
@@ -541,16 +553,70 @@ class BusinessService
          * @param UserModel $user the new user details
          * @return boolean whether the user was successfuly updated
          */
-        public function updatePortfolio(int $id, PortfolioModel $user)
+        public function updatePortfolio(int $portfolioID, PortfolioModel $user)
         {
             $dbAccess = new DataAccess($this->dbname);
             $conn = $dbAccess->getConnection();
             $portdao = new PortfolioDataService($conn);
             
-            $success = $portdao->updatePortfolio($id, $user);
-            $dbAccess->closeConnection();
+            //Get current portfolio details
+            $currentPortfolio = $portdao->getPortfolioDetails(0, $portfolioID);
             
-            return $success;
+            $currentSkillList = $currentPortfolio['skills'];
+            $newSkillList = $user->getSkills();
+            
+            $index = 0;
+            for ($index; $index < count($newSkillList); $index++)
+            {
+                $currentSkill = $currentSkillList[$index];
+                $newSkill = $newSkillList[$index];
+                $portdao->updateSkill($currentSkill, $newSkill, $portfolioID);
+            }
+            for ($index; $index < count($currentSkillList); $index++)
+            {
+                $portdao->deleteSkill($currentSkillList[$index], $portfolioID);
+            }
+            
+            $currentHistoryList = $currentPortfolio['history'];
+            $newHistoryList = $user->getHistory();
+            
+            $index = 0;
+            for ($index; $index < count($newHistoryList); $index++)
+            {
+                $currentHistory = $currentHistoryList[$index];
+                $newHistory = $newHistoryList[$index];
+                $portdao->updateHistory($currentHistory, $newHistory, $portfolioID);
+            }
+            for ($index; $index < count($currentHistoryList); $index++)
+            {
+                $portdao->deleteHistory($currentHistoryList[$index], $portfolioID);
+            }
+            
+            $currentEducationList = $currentPortfolio['education'];
+            $newEducationList = $user->getEducation();
+            
+            $index = 0;
+            for ($index; $index < count($newEducationList); $index++)
+            {
+                $currentInstitution = $currentEducationList[$index]['institution'];
+                $newEducation = $newEducationList[$index];
+                $portdao->updateEducation($currentInstitution, $newEducation, $portfolioID);
+            }
+            for ($index; $index < count($currentEducationList); $index++)
+            {
+                $portdao->deleteEducation($currentEducationList[$index]['institution'], $portfolioID);
+            }
+            
+            return true;
+            //For each element in the current portfolio, link it to its id
+            //For each element, see if it matches any elements in the current portfolio
+            //If there are matches, remove them from the current portfolio
+            
+            
+//             $success = $portdao->updatePortfolio($id, $user);
+//             $dbAccess->closeConnection();
+            
+            //return $success;
         }
         
         /**
@@ -566,5 +632,47 @@ class BusinessService
             $dbConn->closeConnection();
             return $id;
         }
+        
+        public function createPortfolio(int $userID)
+        {
+            $dbConn = new DataAccess($this->dbname);
+            $portfolioDAO = new PortfolioDataService($dbConn->getConnection());
+            $id = $portfolioDAO->addPortfolio($userID);
+            $dbConn->closeConnection();
+        }
+    
+    /**
+     * Function adds a blank education to the portfolio
+     * @param int $portfolioID the id of the portfolio to edit
+     */
+    public function addEducation(int $portfolioID)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $portfolioDAO = new PortfolioDataService($dbConn->getConnection());
+        
+        //echo('Running the add education method');
+        $portfolioDAO->addEducation($portfolioID);
     }
-
+    
+    /**
+     * Function adds a blank history to the portfolio
+     * @param int $portfolioID the id of the portfolio to edit
+     */
+    public function addHistory(int $portfolioID)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $portfolioDAO = new PortfolioDataService($dbConn->getConnection());
+        $portfolioDAO->addHistory($portfolioID);
+    }
+    
+    /**
+     * Function adds a blank skill to the portfolio
+     * @param int $portfolioID the id of the portfolio to edit
+     */
+    public function addSkill(int $portfolioID)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $portfolioDAO = new PortfolioDataService($dbConn->getConnection());
+        $portfolioDAO->addSkill($portfolioID);
+    }
+}

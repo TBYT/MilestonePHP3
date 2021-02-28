@@ -137,7 +137,11 @@ Route::post('viewjob', 'JobController@view');
 Route::post('searchportfolios', 'PortfolioController@search');
 
 //edit portfolio page
-Route::post('editPortfolio', 'PortfolioController@editPortfolio');
+Route::post('editportfolio', 'PortfolioController@editPortfolio');
 
 //view portfolio details
 Route::get('portfolio', 'PortfolioController@viewPortfolio');
+
+Route::get('addeducation', 'PortfolioController@addEducation');
+Route::get('addhistory', 'PortfolioController@addHistory');
+Route::get('addskill', 'PortfolioController@addSkill');

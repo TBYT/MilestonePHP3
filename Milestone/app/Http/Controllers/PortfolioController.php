@@ -76,11 +76,40 @@ class PortfolioController extends BaseController
         
         $portfolioid = $this->business->getPortfolioID($userid);
         
-        $portdata = $this->business->getPortfolioDetails($userid, $portfolioid); //
+        if ($portfolioid == 0)
+        {
+            $this->business->createPortfolio($userid);
+        }
         
+        else 
+        {
+            $portdata = $this->business->getPortfolioDetails($userid, $portfolioid);
+        }
         
-        $data = [ 'portfolio' => $portdata ];
+        $data = [ 
+            'portfolio' => $portdata ,
+            'portfolioID' => $portfolioid,
+        ];
         return view('portfolio')->with($data);
+    
+            //Test data
+//         $portdata = new PortfolioModel();
+        
+//         $portdata->addSkill("TestSkill");
+//         $portdata->addSkill("TestSkill1");
+//         $portdata->addSkill("TestSkill2");
+//         $portdata->addSkill("TestSkill3");
+        
+//         $portdata->addHistory("TestHistory");
+        
+//         $education = [
+//             'institution' => 'HRA',
+//             'startdate' => '2/12/52',
+//             'enddate' => '32/53/213',
+//             'gpa' => '4.2'
+//         ];
+        
+//         $portdata->addEducation($education);
     }
     
     // Returns the port details page, with updated information.
@@ -89,27 +118,131 @@ class PortfolioController extends BaseController
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
         
-        $userid = $this->business->getUserID(session()->get('user'));
+        $portfolioID = request()->get('portfolioID'); 
         
-        $portfolioid = $this->business->getPortfolioID($userid);
+        //Get Portfolio ID from the user
+        //For each 100 + index set, add an education
+        $index = 100;
+        while(request()->get('' . $index . ',institution') != null)
+        {
+            $education = [
+                'institution' => request()->get('' . $index . ',institution'),
+                'startdate' => request()->get('' . $index . ',startdate'),
+                'enddate' => request()->get('' . $index . ',enddate'),
+                'gpa' => request()->get('' . $index++ . ',gpa'),
+            ];
+//             $rules = [
+//                 '' . $index . ',institution' => 'Required|Alpha_Dash',
+//                 '' . $index . ',startdate' => 'Required|Date',
+//                 '' . $index . ',enddate' => 'Required|Date',
+//                 '' . $index . ',gpa' => 'Required|Numeric|Between:0,5',
+//             ];
+            
+//            $this->validate(request(), $rules);
+            
+            $this->user->addEducation($education);
+        }
         
-        /* Gets the data fields from the http post, and puts them in our model*/
-        //$education = array();
-        $education['institution'] = request()->get('institution');
-        $education['startdate'] = request()->get('startdate');
-        $education['enddate'] = request()->get('enddate');
-        $education['gpa'] = request()->get('gpa');
+        //For each 200 + index set, add a skill
+        $index = 200;
+        //die ("Request 200: " . request()->get('' . $index));
+        while (request()->get('' . $index) != null)
+        {
+//             $rules = [
+//                 '' . $index => '', 'Required|Alpha_Dash',
+//             ];
+            
+//             $this->validate(request(), $rules);
+            
+            $this->user->addSkill(request()->get('' . $index++));
+            
+        }
         
-        $this->user->addEducation($education);
-        $this->user->addHistory(request()->get('history'));
-        $this->user->addSkill(request()->get('skills'));
+        //For each 300 + index set, add a job history
+        $index = 300;
+        while (request()->get('' . $index) != null)
+        {
+//             $rules = [
+//                 '' . $index => '', 'Required|Alpha_Dash',
+//             ];
+            
+//            $this->validate(request(), $rules);
+            
+            $this->user->addHistory(request()->get('' . $index++));
+        }
         
-        // Update user
-        $this->business->updatePortfolio($portfolioid, $this->user);
+        $message = 'Portfolio Updated!';
         
-        //session()->put('portfolio', $this->user); //not used.
+        //Take the portfolio id
+        //Call the business service method with the portfolio id and the portfolio details
+        if (!$this->business->updatePortfolio($portfolioID, $this->user))
+        {
+            $message = "Portfolio Update Failed";
+            $this->user = $this->business->getPortfolioDetails(0, $portfolioID);
+        }
         
-        $data = [ 'portfolio' => $this->user, ];
+        $data = [
+            'portfolio' => $this->user,
+            'portfolioID' => $portfolioID,
+            'message' => $message,
+        ];
+        
+        //die("Returning view. data var: " . print_r($data));
+        
+        return view('portfolio')->with($data);
+    }
+    
+    public function addHistory()
+    {
+        $this->business = new BusinessService();
+        $this->user = new PortfolioModel();
+        
+        $portfolioID = request()->get('portfolioID');
+        
+        $this->business->addHistory($portfolioID);
+        $portfolio = $this->business->getPortfolioDetails(0, $portfolioID);
+        
+        $data = [
+            'portfolio' => $portfolio,
+            'portfolioID' => $portfolioID,
+        ];
+        
+        return view('portfolio')->with($data);
+    }
+    
+    public function addEducation()
+    {
+        $this->business = new BusinessService();
+        $this->user = new PortfolioModel();
+        
+        $portfolioID = request()->get('portfolioID');
+        
+        $this->business->addEducation($portfolioID);
+        $portfolio = $this->business->getPortfolioDetails(0, $portfolioID);
+        
+        $data = [
+            'portfolio' => $portfolio,
+            'portfolioID' => $portfolioID,
+        ];
+        
+        return view('portfolio')->with($data);
+    }
+    
+    public function addSkill()
+    {
+        $this->business = new BusinessService();
+        $this->user = new PortfolioModel();
+        
+        $portfolioID = request()->get('portfolioID');
+        
+        $this->business->addSkill($portfolioID);
+        $portfolio = $this->business->getPortfolioDetails(0, $portfolioID);
+        
+        $data = [
+            'portfolio' => $portfolio,
+            'portfolioID' => $portfolioID,
+        ];
+        
         return view('portfolio')->with($data);
     }
 }

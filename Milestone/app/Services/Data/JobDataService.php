@@ -34,6 +34,8 @@ class JobDataService
                     '{$job->getField()}', '{$job->getSkills()}', '{$job->getExperience()}',
                     '{$job->getLocation()}', '{$job->getDescription()}')";
         
+        //die($sql);
+        
         $this->conn->query($sql);
         
         //If the number of rows affected is greater than 0, return true
@@ -69,7 +71,7 @@ class JobDataService
             $job->setSalary($row['salary']);
             
             //Add job to the array, with its id as the index
-            $jobs[$row['idjobs']] = $job;
+            $jobs[$row['id']] = $job;
         }
         
         //Free the result and return the array
@@ -84,7 +86,7 @@ class JobDataService
     public function deleteJob(int $id)
     {
         $sql = "DELETE FROM job
-                WHERE idjobs = '$id'";
+                WHERE id = '$id'";
         
         $this->conn->query($sql);
     }
@@ -97,7 +99,7 @@ class JobDataService
     public function findByID(int $id)
     {
         $sql = "SELECT * FROM job
-                WHERE idjobs = '$id'";
+                WHERE id = '$id'";
         
         $result = $this->conn->query($sql);
         
@@ -133,7 +135,8 @@ class JobDataService
                 SET title = '{$job->getTitle()}', company = '{$job->getcompany()}',
                 salary = '{$job->getSalary()}', field = '{$job->getField()}',
                 skills = '{$job->getSkills()}', experience = '{$job->getExperience()}',
-                location = '{$job->getLocation()}', description = '{$job->getDescription()}'";
+                location = '{$job->getLocation()}', description = '{$job->getDescription()}'
+                WHERE id = '$id'";
         
         $this->conn->query($sql);
         
@@ -164,6 +167,8 @@ class JobDataService
         while ($row = $result->fetch_assoc())
         {
             //Initialize new job and its fields
+            
+            
                 $job = new JobModel();
                 $job->setTitle($row['title']);
                 $job->setField($row['field']);
@@ -175,7 +180,7 @@ class JobDataService
                 $job->setSalary($row['salary']);
                 
                 //Put the job into the array with its id as an index
-                $jobs[$row['idjobs']] = $job;
+                $jobs[$row['id']] = $job;
         }
             
         //Free the result and return the array

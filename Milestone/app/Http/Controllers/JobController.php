@@ -155,19 +155,43 @@ class JobController extends BaseController
         //Initialize business layer
         $this->businessService = new BusinessService();
         
+        $rules = [
+            'title' => 'Required_Without_All',
+        ];
+        
+        //Run Data Validation Rules
+        $this->validate(request(), $rules);
+        
+        //If the fields aren't filled, they will be null
+        $properties = [
+            'title'=>request()->get('title'),
+            'company'=>request()->get('company'),
+            'salary'=>request()->get('salary'),
+            'field' => request()->get('field'),
+            'experience' => request()->get('experience'),
+            'location' => request()->get('location'),
+        ];
+        
         //Run the search method
-        $jobs = $this->businessService->searchJobs(request()->get('searchTerm'), request()->get('pattern'));
+        $jobs = $this->businessService->searchJobs($properties);
         
+        $message = "Search Results";
         
-        //TOOD: this won't order or reflect the property selected in the initial search
-        $data = [
-            'jobs' => $jobs
+        if (count($jobs) == 0)
+        {
+            $message = "No Results";
+        }
+        
+        $data = 
+        [
+            'jobs' => $jobs,
+            'message' => $message,
         ];
         
         //die(print_r($jobs));
         
         //Return results
-        return view('jobsearchresults')->with($data);
+        return redirect('jobsearch')->with($data);
         
     }
     
