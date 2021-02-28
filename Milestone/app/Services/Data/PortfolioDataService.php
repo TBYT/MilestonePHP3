@@ -8,7 +8,6 @@
 
 namespace App\Services\Data;
 
-use App\Models\PortfolioModel;
 use Exception;
 
 class PortfolioDataService
@@ -83,6 +82,11 @@ class PortfolioDataService
 //         return true;
 //     }
     
+    /**
+     * Function to add a portfolio to the database
+     * @param int $id the id of the user to create the portfolio for
+     * @return boolean whether the portfolio was successfuly added
+     */
     public function addPortfolio($id)
     {
         $sql = "INSERT INTO portfolio
@@ -90,79 +94,86 @@ class PortfolioDataService
                 VALUES ('{$id}')";
         
         $this->conn->query($sql);
-//         if ($this->conn->affected_rows > 0)
+        
+        return ($this->conn->affected_rows > 0);
+    }
+    
+    //Not used
+//     public function addPortfolioElements($id)
+//     {
+//         $sql1 = "INSERT INTO education
+//                 (portfolio_id)
+//                 VALUES ('{$id}')";
+        
+//         $result1 = $this->conn->query($sql1);
+        
+//         $sql2 = "INSERT INTO skills
+//                 (portfolio_id)
+//                 VALUES ('{$id}')";
+        
+//         $result2 = $this->conn->query($sql2);
+        
+//         $sql3 = "INSERT INTO history
+//                 (portfolio_id)
+//                 VALUES ('{$id}')";
+        
+//         $result3 = $this->conn->query($sql3);
+        
+//         if (mysqli_num_rows($result1) > 0 && mysqli_num_rows($result2) > 0 && mysqli_num_rows($result3) > 0)
 //         {
-//             $success = addPortfolioElements($id);
+//             $success = $this->conn->affected_rows > 0;
 //         }
-//         //else, we havent add rollback feature yet, so we hope this does not fail.
 //         return $success;
-    }
+//     }
     
-    public function addPortfolioElements($id)
-    {
-        $sql1 = "INSERT INTO education
-                (portfolio_id)
-                VALUES ('{$id}')";
+    //Not used
+//     public function getAllPortfolioUsers()
+//     {
+//         $sql = "SELECT user_id FROM portfolio";
         
-        $result1 = $this->conn->query($sql1);
+//         $result = $this->conn->query($sql);
         
-        $sql2 = "INSERT INTO skills
-                (portfolio_id)
-                VALUES ('{$id}')";
+//         $ids = array();
         
-        $result2 = $this->conn->query($sql2);
+//         while ($row = $result->fetch_assoc())
+//         {
+//             array_push($ids, $row['user_id']);
+//         }
         
-        $sql3 = "INSERT INTO history
-                (portfolio_id)
-                VALUES ('{$id}')";
-        
-        $result3 = $this->conn->query($sql3);
-        
-        if (mysqli_num_rows($result1) > 0 && mysqli_num_rows($result2) > 0 && mysqli_num_rows($result3) > 0)
-        {
-            $success = $this->conn->affected_rows > 0;
-        }
-        return $success;
-    }
+//         return $ids;
+//     }
     
-    public function getAllPortfolioUsers()
-    {
-        $sql = "SELECT user_id FROM portfolio";
+    //Not used
+//     /**
+//      * Search through portfolios
+//      * @param string $pattern the pattern to search 
+//      * @return array
+//      */
+//     public function searchPortfolioUsers(string $pattern)
+//     {
+//         $sql = "SELECT user_id FROM portfolio WHERE user.id = user_id ";
         
-        $result = $this->conn->query($sql);
+//         $result = $this->conn->query($sql);
         
-        $ids = array();
+//         $ids = array();
         
-        while ($row = $result->fetch_assoc())
-        {
-            array_push($ids, $row['user_id']);
-        }
+//         while ($row = $result->fetch_assoc())
+//         {
+//             array_push($ids, $row['user_id']);
+//         }
         
-        return $ids;
-    }
-    
-    public function searchPortfolioUsers(string $pattern)
-    {
-        $sql = "SELECT user_id FROM portfolio WHERE user.id = user_id ";
+//         return $ids;
+//     }
         
-        $result = $this->conn->query($sql);
-        
-        $ids = array();
-        
-        while ($row = $result->fetch_assoc())
-        {
-            array_push($ids, $row['user_id']);
-        }
-        
-        return $ids;
-    }
-        
-        /*
-         * Method to return portfolio details for a user.
-         * Or createa a new portfolio if there are no details retrieved from a resultset.
+        /**
+         * gets the details of the specified portfolio
+         * @param int $portid the id of the portfolio to retrieve
+         * @return string[][]|string[][][] the education, history, and skills of the portfolio
          */
-        public function getPortfolioDetails($id, $portid)
+        public function getPortfolioDetails(int $portid)
         {
+            //TODO: should be 3 functions?
+            
             //Query the row and storing data in a list.
             $educationSQL = "SELECT * FROM education WHERE portfolio_id
                 = '$portid'";
@@ -213,104 +224,54 @@ class PortfolioDataService
                 $index++;
             }
             
-            //die("rows: " . $this->conn->affected_rows);
-            // if there was no data returned at all, we create a new portfolio.
-            //if ($this->conn->affected_rows == 0)
-            if (false)
-            {
-                $sql = "INSERT INTO portfolio
-                (user_id)
-                VALUES ('{$id}')";
-                
-                //die($sql);
-                
-                //$this->conn->query($sql);
-                mysqli_query($this->conn, $sql);
-                
-                $newportid = $this->getPortfolioID($id); //get the newly made portfolio id from the user.
-                
-                $sql1 = "INSERT INTO education
-                (portfolio_id)
-                VALUES ('{$newportid}')";
-                
-                mysqli_query($this->conn, $sql1);
-                
-                $sql2 = "INSERT INTO skills
-                (portfolio_id)
-                VALUES ('{$newportid}')";
-                
-                mysqli_query($this->conn, $sql2);
-                
-                $sql3 = "INSERT INTO history
-                (portfolio_id)
-                VALUES ('{$newportid}')";
-                
-                mysqli_query($this->conn, $sql3);
-                
-                //die($sql1 . "\t" . $sql2 . "\t" . $sql3);
-                
-                $education = array();
-                $education['startdate'] = "";
-                $education['enddate'] = "";
-                $education['institution'] = "";
-                $education['gpa'] = "";
-                $list1[0] = $education; //education list, of education details.
-                
-                $skills = "";
-                $list2[0] = $skills; //skills list
-                
-                $history = "";
-                $list3[0] = $history; //history list
-            }
-            
             $lists = ['education' => $list1, 'skills' => $list2, 'history' => $list3];
             
             return $lists;
         }
-        
-         /**
-         * Function to update user info
-         * @param int $id the id of the user to be updated
-         * @param PortfolioModel $user the portfolio model.
-         * @return boolean whether the user was updated
-         */
-        public function updatePortfolio(int $id, PortfolioModel $user)
-        {
-            //sql
-            //$data = array();
-            $data = $user->getEducation()[0];
+  
+        //Deprecated
+//          /**
+//          * Function to update user info
+//          * @param int $id the id of the user to be updated
+//          * @param PortfolioModel $user the portfolio model.
+//          * @return boolean whether the user was updated
+//          */
+//         public function updatePortfolio(int $id, PortfolioModel $user)
+//         {
+//             //sql
+//             $data = $user->getEducation()[0];
             
-            //die("Education: " . print_r($data) . " History: " . print_r($user->getHistory()) . " Skills: " . print_r($user->getSkills()));
-            //die(print_r($data));
-            $sql1 = "UPDATE education
-                    SET start_date = '{$data['startdate']}', end_date = '{$data['enddate']}',
-                        institution = '{$data['institution']}', gpa = '{$data['gpa']}'
-                    WHERE portfolio_id = '$id'";
+//             $sql1 = "UPDATE education
+//                     SET start_date = '{$data['startdate']}', end_date = '{$data['enddate']}',
+//                         institution = '{$data['institution']}', gpa = '{$data['gpa']}'
+//                     WHERE portfolio_id = '$id'";
             
-            //Query statement, return whether it affects any rows
-            mysqli_query($this->conn, $sql1);
+//             //Query statement, return whether it affects any rows
+//             mysqli_query($this->conn, $sql1);
             
-            //sql
-            $sql2 = "UPDATE history
-                        SET description = '{$user->getHistory()[0]}'
-                        WHERE portfolio_id = '$id'";
+//             $success
             
-            //Query statement, return whether it affects any rows
-            mysqli_query($this->conn, $sql2);
+//             //sql
+//             $sql2 = "UPDATE history
+//                         SET description = '{$user->getHistory()[0]}'
+//                         WHERE portfolio_id = '$id'";
             
-            $sql3 = "UPDATE skills
-                    SET description = '{$user->getSkills()[0]}'
-                    WHERE portfolio_id = '$id'";
+//             //Query statement, return whether it affects any rows
+//             mysqli_query($this->conn, $sql2);
             
-            //Query statement, return whether it affects any rows
-            mysqli_query($this->conn, $sql3);
+//             $sql3 = "UPDATE skills
+//                     SET description = '{$user->getSkills()[0]}'
+//                     WHERE portfolio_id = '$id'";
+            
+//             //Query statement, return whether it affects any rows
+//             mysqli_query($this->conn, $sql3);
             
             
-            //TODO: This should only be successfuly if every transaction completes
-            $success = mysqli_affected_rows($this->conn) > 0;
+//             //TODO: This should only be successfuly if every transaction completes
+//             $success = mysqli_affected_rows($this->conn) > 0;
             
-            return $success;
-        }
+//             return $success;
+//        }
         
         /**
          * function to get the id of a user, used for login
@@ -331,7 +292,7 @@ class PortfolioDataService
                 //If there are results, fetch id
                 if (mysqli_num_rows($result) > 0)
                 {
-                    //I don't remember if this is how you do it, but will find out I guess
+                    //fetch the row, then the id and return it
                     $row = mysqli_fetch_assoc($result);
                     $portID = $row['id'];
                 }
@@ -344,107 +305,189 @@ class PortfolioDataService
             }
         }
     
+    /**
+     * Add an empty education to the database
+     * @param int $portfolioID the id of the portfolio to add the education to 
+     */
     public function addEducation(int $portfolioID)
     {
+        //TODO: return success/error? I didn't know if it was neccessary 
+        //since the function should never fail assuming the logged in user is valid
+        
+        //Craft sql
         $sql = "INSERT INTO education
                 (portfolio_id)
                 VALUES ('$portfolioID')";
         
+        //Query database
         mysqli_query($this->conn, $sql);
     }
     
+    /**
+     * Add an empty skill to the database
+     * @param int $portfolioID the portfolio to add the skill to
+     */
     public function addSkill(int $portfolioID)
     {
+        //Craft sql
         $sql = "INSERT INTO skills
                 (portfolio_id)
                 VALUES ('$portfolioID')";
         
+        //Query the database
         mysqli_query($this->conn, $sql);
     }
     
+    /**
+     * Add an empty history item to the database
+     * @param int $portfolioID the portfolio to add the history to
+     */
     public function addHistory(int $portfolioID)
     {
+        //Craft sql
         $sql = "INSERT INTO history
                 (portfolio_id)
                 VALUES ('$portfolioID')";
         
+        //Query database
         mysqli_query($this->conn, $sql);
     }
     
+    /**
+     * Function to delete an education
+     * @param string $insitution the institution to be deleted
+     * @param int $portfolioID the id of the portfolio to update
+     * @return boolean whether the transaction was successful
+     */
     public function deleteEducation(string $institution, int $portfolioID)
     {
+        //Craft sql
         $sql = "DELETE FROM education 
                     WHERE `institution` = '$institution'
                     AND `portfolio_id` = '$portfolioID'
                     LIMIT 1";
         
+        //Query the database
         $this->conn->query($sql);
         
+        //Return if the database was updated
         return ($this->conn->affected_rows > 0);
     }
     
+    /**
+     * Function to delete a job history
+     * @param string $skill the job history to be deleted
+     * @param int $portfolioID the id of the portfolio to update
+     * @return boolean whether the transaction was successful
+     */
     public function deleteHistory(string $history, int $portfolioID)
     {
+        //Craft sql
         $sql = "DELETE FROM history
                     WHERE `description` = '$history'
                     AND `portfolio_id` = '$portfolioID'
                     LIMIT 1";
         
+        //Query Database
         $this->conn->query($sql);
         
+        //Return whether the database was updated
         return ($this->conn->affected_rows > 0);
     }
     
+    /**
+     * Function to delete a skill
+     * @param string $skill the skill to be deleted
+     * @param int $portfolioID the id of the portfolio to update
+     * @return boolean whether the transaction was successful
+     */
     public function deleteSkill(string $skill, int $portfolioID)
     {
+        //Craft sql
         $sql = "DELETE FROM skills
                     WHERE `description` = '$skill' 
                     AND `portfolio_id` = '$portfolioID'
                     LIMIT 1";
         
-        //die($sql);
-        
+        //Query Database
         $this->conn->query($sql);
         
+        //Return if the database was updated
         return ($this->conn->affected_rows > 0);
     }
     
+    /**
+     * Function to update a specific education
+     * @param string $oldDesc the old institution for the education
+     * @param array $newDesc the updated education
+     * @param int $portfolioID the id of the portfolio to be updated
+     * @return boolean whether the transaction was successful
+     */
     public function updateEducation(string $oldInstitution, array $education, int $portfolioID)
     {
+        //Craft sql
+        //TODO: limit 1?
         $sql = "UPDATE education
                     SET `institution` = '{$education['institution']}',
-                    SET `start_date` = '{$education['startdate']}',
-                    SET `end_date` = '{$education['enddate']}',
-                    SET `gpa` = '{$education['gpa']}',
+                    `start_date` = '{$education['startdate']}',
+                    `end_date` = '{$education['enddate']}',
+                    `gpa` = '{$education['gpa']}'
                     WHERE `institution` = '$oldInstitution'
                     AND `portfolio_id` = '$portfolioID'";
         
+        //Query the database
         $this->conn->query($sql);
         
+        //Return if the database was updated
         return ($this->conn->affected_rows > 0);
     }
     
+    /**
+     * Function to update a specific job history
+     * @param string $oldDesc the old description for the history
+     * @param string $newDesc the updated description
+     * @param int $portfolioID the id of the portfolio to be updated
+     * @return boolean whether the transaction was successful
+     */
     public function updateHistory(string $oldDesc, string $newDesc, int $portfolioID)
     {
+        //TODO: all update functions are very similar... 
+        //maybe merge like the search function?
+        
+        //Craft sql
+        //TODO: limit 1?
         $sql = "UPDATE history
                     SET `description` = '$newDesc'
                     WHERE `description` = '$oldDesc'
                     AND `portfolio_id` = '$portfolioID'";
-        
+       
+        //Query database
         $this->conn->query($sql);
         
+        //Return whether the database was updated
         return ($this->conn->affected_rows > 0);
     }
     
+    /**
+     * Function to update a specific skill
+     * @param string $oldDesc the old description for the skill
+     * @param string $newDesc the updated description
+     * @param int $portfolioID the id of the portfolio to be updated
+     * @return boolean whether the transaction was successful
+     */
     public function updateSkill(string $oldDesc, string $newDesc, int $portfolioID)
     {
+        //Craft sql
+        //TODO: limit 1?
         $sql = "UPDATE skills
-                    SET `description` = '$newDesc',
+                    SET `description` = '$newDesc'
                     WHERE `description` = '$oldDesc'
                     AND `portfolio_id` = '$portfolioID'";
         
+        //Query sql
         $this->conn->query($sql);
         
+        //Return whether the database was updated
         return ($this->conn->affected_rows > 0);
     }
 }

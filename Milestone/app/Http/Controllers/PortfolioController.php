@@ -42,7 +42,7 @@ class PortfolioController extends BaseController
             //If the user has a portfolio, save it
             if ($portID = $this->business->getPortfolioID($id))
             {
-                $portfolios[$portID] = [$user->getName(), $this->business->getPortfolioDetails($id, $portID)];
+                $portfolios[$portID] = [$user->getName(), $this->business->getPortfolioDetails($portID)];
             }
         }
         
@@ -83,7 +83,7 @@ class PortfolioController extends BaseController
         
         else 
         {
-            $portdata = $this->business->getPortfolioDetails($userid, $portfolioid);
+            $portdata = $this->business->getPortfolioDetails($portfolioid);
         }
         
         $data = [ 
@@ -91,25 +91,6 @@ class PortfolioController extends BaseController
             'portfolioID' => $portfolioid,
         ];
         return view('portfolio')->with($data);
-    
-            //Test data
-//         $portdata = new PortfolioModel();
-        
-//         $portdata->addSkill("TestSkill");
-//         $portdata->addSkill("TestSkill1");
-//         $portdata->addSkill("TestSkill2");
-//         $portdata->addSkill("TestSkill3");
-        
-//         $portdata->addHistory("TestHistory");
-        
-//         $education = [
-//             'institution' => 'HRA',
-//             'startdate' => '2/12/52',
-//             'enddate' => '32/53/213',
-//             'gpa' => '4.2'
-//         ];
-        
-//         $portdata->addEducation($education);
     }
     
     // Returns the port details page, with updated information.
@@ -178,7 +159,7 @@ class PortfolioController extends BaseController
         if (!$this->business->updatePortfolio($portfolioID, $this->user))
         {
             $message = "Portfolio Update Failed";
-            $this->user = $this->business->getPortfolioDetails(0, $portfolioID);
+            $this->user = $this->business->getPortfolioDetails($portfolioID);
         }
         
         $data = [
@@ -192,57 +173,75 @@ class PortfolioController extends BaseController
         return view('portfolio')->with($data);
     }
     
+    //Function to add a history
+    //TODO: this function is almost identical to addEducation and addSkill, maybe combine?
     public function addHistory()
     {
+        //Initialize business layer and portfolio instance
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
         
+        //Get portfolio id from request
         $portfolioID = request()->get('portfolioID');
         
+        //Add a blank history to the portfolio id
         $this->business->addHistory($portfolioID);
-        $portfolio = $this->business->getPortfolioDetails(0, $portfolioID);
         
+        //Get the updated portfolio
+        $portfolio = $this->business->getPortfolioDetails($portfolioID);
+        
+        //Pass back portfolio info
         $data = [
             'portfolio' => $portfolio,
             'portfolioID' => $portfolioID,
         ];
         
+        //Return to view page
         return view('portfolio')->with($data);
     }
     
+    //Function to add education, see addHistory()
     public function addEducation()
     {
+        //Initialize business layer and portfolio instance
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
         
+        //Get portfolio id from request
         $portfolioID = request()->get('portfolioID');
         
+        //Add a blank education to the portfolio id
         $this->business->addEducation($portfolioID);
-        $portfolio = $this->business->getPortfolioDetails(0, $portfolioID);
+        //Get the updated portfolio
+        $portfolio = $this->business->getPortfolioDetails($portfolioID);
         
+        //Pass back portfolio info
         $data = [
             'portfolio' => $portfolio,
             'portfolioID' => $portfolioID,
         ];
-        
         return view('portfolio')->with($data);
     }
     
     public function addSkill()
     {
+        //Initialize business layer and portfolio instance
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
         
+        //Get portfolio id from request
         $portfolioID = request()->get('portfolioID');
         
+        //Add a blank skill to the portfolio id
         $this->business->addSkill($portfolioID);
-        $portfolio = $this->business->getPortfolioDetails(0, $portfolioID);
+        //Get the updated portfolio
+        $portfolio = $this->business->getPortfolioDetails($portfolioID);
         
+        //Pass back portfolio info
         $data = [
             'portfolio' => $portfolio,
             'portfolioID' => $portfolioID,
         ];
-        
         return view('portfolio')->with($data);
     }
 }

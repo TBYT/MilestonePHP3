@@ -156,7 +156,7 @@ class JobController extends BaseController
         $this->businessService = new BusinessService();
         
         $rules = [
-            'title' => 'Required_Without_All',
+            'title' => 'Required_Without_All:salary,field,location,experience,company',
         ];
         
         //Run Data Validation Rules

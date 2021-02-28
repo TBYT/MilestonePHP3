@@ -21,6 +21,21 @@ class BusinessService
 {
     private $dbname = "dbcst256";
     
+    /**
+     * Function to call if an ACID transaction fails
+     * @param DataAccess $da the data access instance being used for the method
+     * @return boolean false to signify that the method call failed
+     */
+    private function transactionFailed(DataAccess $da)
+    {
+        //Rollback the transaction and close the connection
+        $da->rollbackTransaction();
+        $da->closeConnection();
+        
+        //Return false (to reduce # of lines in class)
+        return false;
+    }
+    
 /*******************************************************************
  * User Functions
  *******************************************************************/    
@@ -312,9 +327,9 @@ class BusinessService
         {
             if ($value!=null)
             {
-                foreach($jobsdao->search($name, $value) as $job)
+                foreach($jobsdao->search($name, $value) as $id => $job)
                 {
-                    array_push($jobs, $job);
+                    $jobs[$id] = $job;
                 }
             }
         }
@@ -418,228 +433,193 @@ class BusinessService
         
         $dbAccess->closeConnection();
     }
-    
-    /**
-     * Function to add a portfolio 
-     * @param PortfolioModel $portfolio The portfolio to be added
-     * @param int $id the id of the currently logged in user
-     * @return bool whether the model was successfuly added
-     */
-    public function addPortfolio(PortfolioModel $portfolio, int $id)
+        
+
+    public function getPortfolioDetails($portid)
     {
-        //Create DBAccess class and get connection
-        //Instantiate the Data Layer
+        $dbAccess = new DataAccess($this->dbname);
+        $conn = $dbAccess->getConnection();
+        $portdao = new PortfolioDataService($conn);
         
-        //Set autocommit to false (Must be an ACID transaction)
-        //Begin Transaction
+        $details = $portdao->getPortfolioDetails($portid);
+            
+        $model = new PortfolioModel();
+            
+        //ForEach statements to add data to the model
+        foreach ($details['education'] as $education)
+        {
+            $model->addEducation($education);
+        }
         
-        //Create empty portfolio model with the user id
+        foreach ($details['history'] as $history)
+        {
+            $model->addHistory($history);
+        }
         
-        //Get portfolio id if needed
+        foreach ($details['skills'] as $skills)
+        {
+            $model->addSkill($skills);
+        }
         
-        //Call the add education function for each education
-        //Call the add history function for each job history
-        //Call the add skill function for each skill
+        $dbAccess->closeConnection();
         
-        //If any of the database connections failed, rollback
-        //Else commit transaction
+        return $model;
+    }
         
-        //Close database connection
-        //Return success var
+    /**
+     * updates the given portfolio
+     * @param int $id the porfolio id to be updated
+     * @param PortfolioModel $porfolio the new portfolio
+     * @return boolean whether the portfolio was successfuly updated
+     */
+    public function updatePortfolio(int $portfolioID, PortfolioModel $portfolio)
+    {
+        //Create data access and dao object
+        $dbAccess = new DataAccess($this->dbname);
+        $conn = $dbAccess->getConnection();
+        $portdao = new PortfolioDataService($conn);
+        
+        //Set autocommit to false and begin a transaction
+        $dbAccess->setAutocommit(false);
+        $dbAccess->beginTransaction();
+        
+        //Get current portfolio details
+        $currentPortfolio = $portdao->getPortfolioDetails($portfolioID);
+        
+        //Get the lists of current and new skills
+        $currentSkillList = $currentPortfolio['skills'];
+        $newSkillList = $portfolio->getSkills();
+        
+        //Start at the first skill
+        $index = 0;
+        
+        //For each item in the new list(It will never have more than the current list)
+        for ($index; $index < count($newSkillList); $index++)
+        {
+            //Take the current and new skill
+            $currentSkill = $currentSkillList[$index];
+            $newSkill = $newSkillList[$index];
+            
+            //Need to make sure the current and new skills don't match
+            if ($currentSkill == $newSkill)
+            {
+                continue;
+            }
+            
+            //Update the current skill to match the new skill
+            //If it fails, rollback the transaction
+            //NB: this is kind of inneficient, because there may be a current skill
+            //that already exactly matches the new skill but has a different index.
+            //However, since I don't track indexes throughout the update portfolio page,
+            //I couldn't think of a better way of doing it without writing a ton of extra code
+            if (!$portdao->updateSkill($currentSkill, $newSkill, $portfolioID))
+            {
+                return $this->transactionFailed($dbAccess);
+            }
+        }
+        
+        //If there are extra items in the current list, delete them
+        for ($index; $index < count($currentSkillList); $index++)
+        {
+            //If the delete fails, cancel transaction and return false
+            if (!$portdao->deleteSkill($currentSkillList[$index], $portfolioID))
+            {
+                return $this->transactionFailed($dbAccess);
+            }
+        }
+        
+        //Repeat process above for history and education
+        //TODO: copied code, make new method?
+        $currentHistoryList = $currentPortfolio['history'];
+        $newHistoryList = $portfolio->getHistory();
+        
+        $index = 0;
+        for ($index; $index < count($newHistoryList); $index++)
+        {
+            $currentHistory = $currentHistoryList[$index];
+            $newHistory = $newHistoryList[$index];
+            
+            //Need to make sure the current and new histories don't match
+            if ($currentHistory == $newHistory)
+            {
+                continue;
+            }
+            
+            if (!$portdao->updateHistory($currentHistory, $newHistory, $portfolioID))
+            {
+                return $this->transactionFailed($dbAccess);
+            }
+        }
+        for ($index; $index < count($currentHistoryList); $index++)
+        {
+            if (!$portdao->deleteHistory($currentHistoryList[$index], $portfolioID))
+            {
+                return $this->transactionFailed($dbAccess);
+            }
+        }
+        
+        $currentEducationList = $currentPortfolio['education'];
+        $newEducationList = $portfolio->getEducation();
+        
+        $index = 0;
+        for ($index; $index < count($newEducationList); $index++)
+        {
+            //Need to take the institution index of the education instead of the value directly,
+            //Since each entry in the education table is a sub array
+            $currentInstitution = $currentEducationList[$index]['institution'];
+            $newEducation = $newEducationList[$index];
+            
+            //Need to make sure the current and new skills don't match
+            if ($currentInstitution == $newEducation['institution'] &&
+                $currentEducationList[$index]['startdate'] == $newEducation['startdate'] &&
+                $currentEducationList[$index]['enddate'] == $newEducation['enddate'] &&
+                $currentEducationList[$index]['gpa'] == $newEducation['gpa'])
+            {
+                continue;
+            }
+            
+            if (!$portdao->updateEducation($currentInstitution, $newEducation, $portfolioID))
+            {
+                return $this->transactionFailed($dbAccess);
+            }
+        }
+        for ($index; $index < count($currentEducationList); $index++)
+        {
+            //See above
+            if (!$portdao->deleteEducation($currentEducationList[$index]['institution'], $portfolioID))
+            {
+                return $this->transactionFailed($dbAccess);
+            }
+        }
+        
+        //Finish the transaction and close the connection if everything succeeds
+        //Then return true
+        $dbAccess->commitTransaction();
+        $dbAccess->closeConnection();
         return true;
     }
+        
+    /**
+     * gets the id of the specified user, used for logging in
+     * @param UserModel $user the user credentials to pass in
+     * @return number| the id of the user found, 0 if failure
+     */
+    public function getPortfolioID($id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $userdao = new PortfolioDataService($dbConn->getConnection());
+        $id = $userdao->getPortfolioID($id);
+        $dbConn->closeConnection();
+        return $id;
+    }
     
-//     public function getPortfolioDetails($id)
-//     {
-//         $dbAccess = new DataAccess($this->dbname);
-//         $conn = $dbAccess->getConnection();
-//         $portdao = new PortfolioDataService($conn);
-        
-//         $details = $portdao->getPortfolioDetails($id);
-        
-//         $model = new PortfolioModel();
-        
-//         //
-//         foreach ($details['education'] as $education)
-//         {
-//             $model->addEducation($education);
-//         }
-        
-//         foreach ($details['history'] as $history)
-//         {
-//             $model->addHistory($history);
-//         }
-        
-//         foreach ($details['skills'] as $skills)
-//         {
-//             $model->addSkill($skills);
-//         }
-        
-//         $dbAccess->closeConnection();
-        
-//         return $model;
-//     }
-    
-//     /**
-//      * updates the given portfolio
-//      * @param int $id the id of the user to be updated
-//      * @param UserModel $user the new user details
-//      * @return boolean whether the user was successfuly updated
-//      */
-//     public function updatePortfolio(int $id, PortfolioModel $user)
-//     {
-//         $dbAccess = new DataAccess($this->dbname);
-//         $conn = $dbAccess->getConnection();
-//         $userdao = new PortfolioDataService($conn);
-        
-//         $success = $userdao->updatePortfolio($id, $user);
-//         $dbAccess->closeConnection();
-        
-//         return $success;
-//     }
-    
-//     /**
-//      * gets the id of the specified user, used for logging in
-//      * @param UserModel $user the user credentials to pass in
-//      * @return number| the id of the user found, 0 if failure
-//      */
-//     public function getPortfolioID($id)
-//     {
-//         $dbConn = new DataAccess($this->dbname);
-//         $userdao = new PortfolioDataService($dbConn->getConnection());
-//         $id = $userdao->getPortfolioID($id);
-//         $dbConn->closeConnection();
-//         return $id;
-//     }
-       
-        
-        /*
-         * Gets the portfolio details and updates the portfolio model when returned from the database.
-         */
-        public function getPortfolioDetails($id, $portid)
-        {
-            $dbAccess = new DataAccess($this->dbname);
-            $conn = $dbAccess->getConnection();
-            $portdao = new PortfolioDataService($conn);
-            
-            $details = $portdao->getPortfolioDetails($id, $portid);
-            
-            $model = new PortfolioModel();
-            
-            //ForEach statements to add data to the model
-            foreach ($details['education'] as $education)
-            {
-                $model->addEducation($education);
-            }
-            
-            foreach ($details['history'] as $history)
-            {
-                $model->addHistory($history);
-            }
-            
-            foreach ($details['skills'] as $skills)
-            {
-                $model->addSkill($skills);
-            }
-            
-            $dbAccess->closeConnection();
-            
-            return $model;
-        }
-        
-        /**
-         * updates the given portfolio
-         * @param int $id the id of the user to be updated
-         * @param UserModel $user the new user details
-         * @return boolean whether the user was successfuly updated
-         */
-        public function updatePortfolio(int $portfolioID, PortfolioModel $user)
-        {
-            $dbAccess = new DataAccess($this->dbname);
-            $conn = $dbAccess->getConnection();
-            $portdao = new PortfolioDataService($conn);
-            
-            //Get current portfolio details
-            $currentPortfolio = $portdao->getPortfolioDetails(0, $portfolioID);
-            
-            $currentSkillList = $currentPortfolio['skills'];
-            $newSkillList = $user->getSkills();
-            
-            $index = 0;
-            for ($index; $index < count($newSkillList); $index++)
-            {
-                $currentSkill = $currentSkillList[$index];
-                $newSkill = $newSkillList[$index];
-                $portdao->updateSkill($currentSkill, $newSkill, $portfolioID);
-            }
-            for ($index; $index < count($currentSkillList); $index++)
-            {
-                $portdao->deleteSkill($currentSkillList[$index], $portfolioID);
-            }
-            
-            $currentHistoryList = $currentPortfolio['history'];
-            $newHistoryList = $user->getHistory();
-            
-            $index = 0;
-            for ($index; $index < count($newHistoryList); $index++)
-            {
-                $currentHistory = $currentHistoryList[$index];
-                $newHistory = $newHistoryList[$index];
-                $portdao->updateHistory($currentHistory, $newHistory, $portfolioID);
-            }
-            for ($index; $index < count($currentHistoryList); $index++)
-            {
-                $portdao->deleteHistory($currentHistoryList[$index], $portfolioID);
-            }
-            
-            $currentEducationList = $currentPortfolio['education'];
-            $newEducationList = $user->getEducation();
-            
-            $index = 0;
-            for ($index; $index < count($newEducationList); $index++)
-            {
-                $currentInstitution = $currentEducationList[$index]['institution'];
-                $newEducation = $newEducationList[$index];
-                $portdao->updateEducation($currentInstitution, $newEducation, $portfolioID);
-            }
-            for ($index; $index < count($currentEducationList); $index++)
-            {
-                $portdao->deleteEducation($currentEducationList[$index]['institution'], $portfolioID);
-            }
-            
-            return true;
-            //For each element in the current portfolio, link it to its id
-            //For each element, see if it matches any elements in the current portfolio
-            //If there are matches, remove them from the current portfolio
-            
-            
-//             $success = $portdao->updatePortfolio($id, $user);
-//             $dbAccess->closeConnection();
-            
-            //return $success;
-        }
-        
-        /**
-         * gets the id of the specified user, used for logging in
-         * @param UserModel $user the user credentials to pass in
-         * @return number| the id of the user found, 0 if failure
-         */
-        public function getPortfolioID($id)
-        {
-            $dbConn = new DataAccess($this->dbname);
-            $userdao = new PortfolioDataService($dbConn->getConnection());
-            $id = $userdao->getPortfolioID($id);
-            $dbConn->closeConnection();
-            return $id;
-        }
-        
-        public function createPortfolio(int $userID)
-        {
-            $dbConn = new DataAccess($this->dbname);
-            $portfolioDAO = new PortfolioDataService($dbConn->getConnection());
-            $id = $portfolioDAO->addPortfolio($userID);
-            $dbConn->closeConnection();
-        }
+    public function createPortfolio(int $userID)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $portfolioDAO = new PortfolioDataService($dbConn->getConnection());
+        $id = $portfolioDAO->addPortfolio($userID);
+        $dbConn->closeConnection();
+    }
     
     /**
      * Function adds a blank education to the portfolio
