@@ -229,6 +229,7 @@ class AffinityController extends BaseController
     //Show the edit page for a group
     public function showEdit()
     {
+        $this->pc = new PrivilegeCheck();
         //Initialize business layer
         $this->businessService = new BusinessService();
         
@@ -244,6 +245,6 @@ class AffinityController extends BaseController
             'id' => $id,
         ];
         
-        return view('admin/editaffinitygroup')->with($data);
+        return view($this->pc->SecurityisAdmin('admin/editaffinitygroup'))->with($data);
     }
 }
