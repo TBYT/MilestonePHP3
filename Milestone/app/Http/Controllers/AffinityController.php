@@ -133,4 +133,25 @@ class AffinityController extends BaseController
         
         return view('')->with($data);
     }
+    
+    public function leave()
+    {
+        $this->businessService = new BusinessService();
+        
+        $groupID = requset()->get('id');
+        $userID = $this->businessService->getUserID(session()->get('user'));
+        
+        $message = "You have left the group";
+        
+        if (!$this->businessService->leaveGroup($userID, $groupID))
+        {
+            $message = "Sorry, you could not leave this group";
+        }
+        
+        $data = [
+            'message', $message,
+        ];
+        
+        return view('')->with($data);
+    }
 }

@@ -655,4 +655,109 @@ class BusinessService
         $portfolioDAO = new PortfolioDataService($dbConn->getConnection());
         $portfolioDAO->addSkill($portfolioID);
     }
+    
+    /*******************************************************************
+     * Affinity Group Functions
+     *******************************************************************/ 
+    
+    public function createAffinityGroup(string $group, string $description)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $success = false;
+        
+        if ($affinityDAO->addGroup($group, $description))
+        {
+            $success = true;
+        }
+        
+        $dbConn->closeConnection();
+        return $success;
+    }
+    
+    public function getGroupDetails(int $id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $group = $affinityDAO->getGroupDetails($id);
+        
+        $dbConn->closeConnection();
+        
+        return $group;
+    }
+    
+    public function getAllUsersInGroup(int $id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $users = $affinityDAO->getAllUsers($id);
+        
+        $dbConn->closeConnection();
+        
+        return $users;
+    }
+    
+    public function userInGroup(int $userID, int $id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $inGroup = $affinityDAO->userInGroup($userID, $id);
+        
+        $dbConn->closeConnection();
+        
+        return $inGroup;
+    }
+    
+    public function deleteGroup(int $id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $success = $affinityDAO->deleteGroup($id);
+        
+        $dbConn->closeConnection();
+        
+        return $success;
+    }
+    
+    public function updateGroup(int $id, string $name, string $desc)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $success = $affinityDAO->updateGroup($id, $name, $desc);
+        
+        $dbConn->closeConnection();
+        
+        return $success;
+    }
+    
+    public function joinGroup(int $userID, $id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $success = $affinityDAO->joinGroup($userID, $id);
+        
+        $dbConn->closeConnection();
+        
+        return $success;
+    }
+    
+    public function leaveGroup()
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $success = $affinityDAO->leaveGroup($userID, $id);
+        
+        $dbConn->closeConnection();
+        
+        return $success;
+    }
+    
 }
