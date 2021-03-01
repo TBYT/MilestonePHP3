@@ -661,115 +661,176 @@ class BusinessService
      * Affinity Group Functions
      *******************************************************************/ 
     
+    /**
+     * create a new group
+     * @param string $group the group name
+     * @param string $description the description for the group
+     * @return boolean whether the group was successfuly created
+     */
     public function createAffinityGroup(string $group, string $description)
     {
+        //Initialize data layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
+        //Default return is false
         $success = false;
         
+        //Add the group
         if ($affinityDAO->addGroup($group, $description))
         {
             $success = true;
         }
         
+        //Close connection and return status
         $dbConn->closeConnection();
         return $success;
     }
     
+    /**
+     * Get the details for a specified group
+     * @param int $id the id of the group to get
+     * @return string[] an array of groups, mapping id => name
+     */
     public function getGroupDetails(int $id)
     {
+        //Initialize data layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
+        //Get group details, close connection and return the group
         $group = $affinityDAO->getGroupDetails($id);
-        
         $dbConn->closeConnection();
-        
         return $group;
     }
     
+    /**
+     * Get all of the users in the specified group
+     * @param int $id the group to search for the users in 
+     * @return mixed[]|string[] a list of users, mapped id => name
+     */
     public function getAllUsersInGroup(int $id)
     {
+        //Initialize the data layer
+        //Need to access users as well, so create userDAO
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         $userDAO = new UserDataService($dbConn->getConnection());
         
+        //Get all the users in the group
         $ids = $affinityDAO->getAllUsers($id);
         
+        //For each user, find their name and put it into a new array
         $users = array();
-        
         foreach ($ids as $userID)
         {
             $user = $userDAO->getUserDetails($userID);
-            
             $name = $user->getName();
             
+            //Map id to name
             $users[$userID] = $name;
         }
         
+        //Close connection and return array
         $dbConn->closeConnection();
-        
         return $users;
     }
     
+    /**
+     * Determine if the specified user is in the group
+     * @param int $userID the id of the user to check
+     * @param int $id the id of the group
+     * @return boolean whether the user is a member of the group
+     */
     public function userInGroup(int $userID, int $id)
     {
+        //Initialize business layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
-        $inGroup = $affinityDAO->userInGroup($userID, $id);
-        
+        //Check if the user is in the group
+        $inGroup = $affinityDAO->userInGroup($userID, $id); 
         $dbConn->closeConnection();
         
         return $inGroup;
     }
     
+    /**
+     * Delete a group
+     * @param int $id the group to delete
+     * @return boolean whether the group was deleted
+     */
     public function deleteGroup(int $id)
     {
+        //Initialize the data layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
+        //Delete the group and return whether it was successful
         $success = $affinityDAO->deleteGroup($id);
-        
         $dbConn->closeConnection();
         
         return $success;
     }
     
+    /**
+     * Function to update a group's details
+     * @param int $id the id of the group to update
+     * @param string $name the new name for the group
+     * @param string $desc the new description for the group
+     * @return boolean whether the group was successfully updated
+     */
     public function updateGroup(int $id, string $name, string $desc)
     {
+        //Initialize data layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
+        //Update the group
         $success = $affinityDAO->updateGroup($id, $name, $desc);
         
+        //Close the connection and return if the update was successful
         $dbConn->closeConnection();
-        
         return $success;
     }
     
-    public function joinGroup(int $userID, $id)
+    /**
+     * Put the specified user into the group
+     * @param int $userID the user to join
+     * @param int $id the id of the group
+     * @return boolean whether the user successfuly joined
+     */
+    public function joinGroup(int $userID, int $id)
     {
+        //Initialize the data layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
+        //Try to join the group
         $success = $affinityDAO->joinGroup($userID, $id);
         
+        //Close the connection and return if the query was successful
         $dbConn->closeConnection();
-        
         return $success;
     }
     
+    /**
+     * Leave the group, works almost the same as the joinGroup
+     * @param int $userID the id of the user to join
+     * @param int $id the id of the group
+     * @return boolean whether the user joined
+     */
     public function leaveGroup(int $userID, int $id)
     {
+        //Initialize the data layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
+        //Leave the group
         $success = $affinityDAO->leaveGroup($userID, $id);
         
+        //Close the connection
         $dbConn->closeConnection();
-        
         return $success;
     }
     
@@ -785,15 +846,23 @@ class BusinessService
         return $groups;
     }
     
+    /**
+     * Get the specified affinity group by its id
+     * TODO: this function is the exact same as getDetails, remove it
+     * @param int $id the id of the group
+     * @return string[] the groups details
+     */
     public function getAffinityGroupByID(int $id)
     {
+        //Initialize the data layer
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
         
+        //Get the group details
         $group = $affinityDAO->getByID($id);
         
+        //Close the connection and return the group
         $dbConn->closeConnection();
-        
         return $group;
     }
 }

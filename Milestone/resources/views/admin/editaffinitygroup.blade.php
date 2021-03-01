@@ -1,4 +1,4 @@
-<!-- Page to make new Job -->
+<!-- Page to make Edit an affinity group -->
 
 @extends('layouts/app')
 
@@ -28,8 +28,7 @@
     					<div class="card-header">Edit Affinity Group</div>
     
     						<div class="card-body">
-    							<!-- Form to initialize each of the fields 
-    							     This is almost identical to the edit job page... maybe merge the two? -->
+    							<!-- Form to initialize each of the fields -->
                         		<form method="post" action="doeditaffinitygroup">
                         			{{csrf_field()}}
                         			<input type="hidden" value="{{ $id }}" name="id"/>

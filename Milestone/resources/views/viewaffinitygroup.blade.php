@@ -1,4 +1,4 @@
-<!-- Page to show portfolio search form and results -->
+<!-- Page to view one affinity group in detail-->
 
 @extends('layouts/app')
 
@@ -9,14 +9,15 @@
 		<div class="row justify-content-center">
 			<div class="col-md-8">
 				<div class="card">
-					<div class="card-header">View Portfolio</div>
+					<div class="card-header">View Affinity Group</div>
 					<div class="card-body" align="center">
-						<!-- Name -->
+						<!-- Group details -->
 						<h3 class="card-header">Name: {{ $group['name'] }}</h3>
 						<div class="card-body border border-secondary">
 							<p class="center"> {{ $group['description'] }} </p>
 							<hr>
 							
+							<!-- People in the group -->
 							<h3> Members</h3>
 							<ul>
 							
@@ -29,7 +30,8 @@
     							 @endforeach
 							
 							</ul>
-
+							
+							<!-- Button to leave or join the group -->
 							@if ($inGroup)
 							<form action="leaveaffinitygroup" method="post">
 								{{ csrf_field() }}
@@ -44,9 +46,11 @@
 								<label for="join">Join This Group:</label><br>
 								<input type="submit" value="Join Group" id="join"/>
 							</form>
+							
+							<!-- Button to return to the affinity groups page -->
 							@endif
 							<br><br>
-							<form action="showallaffinitygroups" method="get">
+							<form action="allaffinitygroups" method="get">
 								{{ csrf_field() }}
 								<input type="hidden" value="{{ $groupID }}" name="id"/>
 								<label for="join">Go Back</label><br>
