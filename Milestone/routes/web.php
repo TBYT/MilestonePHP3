@@ -72,7 +72,7 @@ Route::get('portfoliosearch', function()
 
 Route::get('newaffinitygroup', function()
 {
-    return view('admin\newaffinitygroup');
+    return view($this->pc->SecurityisAdmin('admin\newaffinitygroup'));
 });
 
 /*

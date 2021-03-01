@@ -12,9 +12,9 @@
                 <!-- This is the result page for update and delete actions, 
                     so display message from those methods -->
                 @if (isset($message))
-             	<h1>{{ $message }} </h1>
+             	<h1 align="center" class="card-header">{{ $message }} </h1>
              	@endif
-			<ul>
+			<ul><hr>
 				<!-- For each group in the list, show its name and the three buttons -->
 				@foreach ($groups as $id => $group)
 				<li>
@@ -45,6 +45,7 @@
 						</span>
 					@endif
 				</li>
+				<hr>
 				@endforeach
 				
 				@if (session()->get('isAdmin'))

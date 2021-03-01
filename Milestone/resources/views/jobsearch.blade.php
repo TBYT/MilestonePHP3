@@ -72,8 +72,8 @@
         				</form>
         						
         				@if (session('message'))
-                        	<h1 align="center"> {{ session('message') }} </h1>
-                    			<ul>
+                        	<h1 align="center" class="card-header"> {{ session('message') }} </h1>
+                    			<ul><hr>
                     				<!-- Each job in the list of results -->
                     				<!-- TODO: need an empty list error page -->
                         			@foreach (session('jobs') as $id => $job)
@@ -90,6 +90,7 @@
                        						<input type="hidden" name="id" value="{{ $id }}"/>
                        						<input type="submit" value="View"/>
                        					</form>
+                       					<hr>
             	       				@endforeach
                    				</ul>
                    			<form action="jobsearch" method="get">
