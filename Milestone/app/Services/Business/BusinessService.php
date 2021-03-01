@@ -15,6 +15,7 @@ use App\Models\JobModel;
 use App\Services\Data\Utility\DataAccess;
 use App\Models\PortfolioModel;
 use App\Services\Data\PortfolioDataService;
+use App\Services\Data\AffinityGroupDataService;
 
 //Business service class, transfers data from dao to controller
 class BusinessService
