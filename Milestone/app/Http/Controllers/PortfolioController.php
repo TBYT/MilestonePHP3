@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
+use ErrorException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\PortfolioModel;
@@ -72,12 +73,16 @@ class PortfolioController extends BaseController
         $this->business = new BusinessService();
         
         // Gets the session user
-        $this->user = session()->get('user');
+        if ($this->user = session()->get('user') == null)
+        {
+            return view("welcome");
+        }
+        else $this->user = session()->get('user');
         
         $userid = $this->business->getUserID(session()->get('user'));
         
         $portfolioid = $this->business->getPortfolioID($userid);
-        
+
         if ($portfolioid == 0)
         {
             $this->business->createPortfolio($userid);
