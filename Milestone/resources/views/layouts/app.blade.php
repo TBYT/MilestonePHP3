@@ -59,7 +59,7 @@
                                 <a style="color: white" class="nav-link" href="portfoliosearch">Search Portfolios</a>
                         </li>
                         <li class="nav-item border border-light rounded-pill">
-                                <a style="color: white" class="nav-link" href="showallaffinitygroups">Browse Affinity Groups</a>
+                                <a style="color: white" class="nav-link" href="allaffinitygroups">Browse Affinity Groups</a>
                         </li>
                          <div class="dropdown">
   						<button class="btn btn-secondary dropdown-toggle nav-item border border-light rounded-pill" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
