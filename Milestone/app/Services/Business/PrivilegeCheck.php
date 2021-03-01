@@ -8,10 +8,10 @@ class PrivilegeCheck
         //Router::class($in);
         if (session()->get('isAdmin') == false)
         {
-           return "welcome";
+            return "welcome";
         }
         else
-        return $in;
+            return $in;
     }
     
     
@@ -22,7 +22,7 @@ class PrivilegeCheck
             return "welcome";
         }
         else
-        return $in;
+            return $in;
     }
     
 }

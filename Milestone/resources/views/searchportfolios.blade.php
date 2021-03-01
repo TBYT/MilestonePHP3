@@ -64,7 +64,7 @@
     										@if (count($portfolio[1]->getHistory()) == 0)
     											<b>None</b>
     										@endif
-    										<!-- Display each job history's details -->
+    										<!-- Display each job history's detailsi -->
     										@foreach ($portfolio[1]->getHistory() as $history)
     											<a>{{ $history }}</a><br/>
     										@endforeach

@@ -693,8 +693,20 @@ class BusinessService
     {
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        $userDAO = new UserDataService($dbConn->getConnection());
         
-        $users = $affinityDAO->getAllUsers($id);
+        $ids = $affinityDAO->getAllUsers($id);
+        
+        $users = array();
+        
+        foreach ($ids as $userID)
+        {
+            $user = $userDAO->getUserDetails($userID);
+            
+            $name = $user->getName();
+            
+            $users[$userID] = $name;
+        }
         
         $dbConn->closeConnection();
         
@@ -749,7 +761,7 @@ class BusinessService
         return $success;
     }
     
-    public function leaveGroup()
+    public function leaveGroup(int $userID, int $id)
     {
         $dbConn = new DataAccess($this->dbname);
         $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
@@ -761,4 +773,27 @@ class BusinessService
         return $success;
     }
     
+    public function getAllAffinityGroups()
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $groups = $affinityDAO->getAll();
+        
+        $dbConn->closeConnection();
+        
+        return $groups;
+    }
+    
+    public function getAffinityGroupByID(int $id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $affinityDAO = new AffinityGroupDataService($dbConn->getConnection());
+        
+        $group = $affinityDAO->getByID($id);
+        
+        $dbConn->closeConnection();
+        
+        return $group;
+    }
 }

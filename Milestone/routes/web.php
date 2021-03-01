@@ -46,8 +46,7 @@ Route::get('register', function()
 });
 
 //admin page
-Route::get('admin', function()
-{
+Route::get('admin', function(){
     return view($this->pc->SecurityisAdmin('admin\adminactions'));
 });
 
@@ -69,6 +68,11 @@ Route::get('jobsearch', function()
 Route::get('portfoliosearch', function()
 {
     return view($this->pc->SecurityisLoggedIn('searchportfolios')); 
+});
+
+Route::get('newaffinitygroup', function()
+{
+    return view('admin\newaffinitygroup');
 });
 
 /*
@@ -103,7 +107,7 @@ Route::post('editUser', 'UserController@editUser');
 //manages registration requests
 Route::post('register', 'UserController@register');
 
-//Route::get('portfoliorequest', 'UserController@viewRequests');
+Route::get('portfoliorequest', 'UserController@viewRequests');
 
 Route::post('approverequest', 'UserController@approveRequest');
 
@@ -118,7 +122,7 @@ Route::post('displayuser', 'UserController@displayUserRequest');
 |--------------------------------------------------------------------------
  */
 
-//Route for handling the addjob form, admin
+//Route for handling the addjob form
 Route::post('addjob', 'JobController@add');
 
 Route::get('showalljobs', 'JobController@showAll');
@@ -150,3 +154,25 @@ Route::get('portfolio', 'PortfolioController@viewPortfolio');
 Route::get('addeducation', 'PortfolioController@addEducation');
 Route::get('addhistory', 'PortfolioController@addHistory');
 Route::get('addskill', 'PortfolioController@addSkill');
+
+/*
+ |--------------------------------------------------------------------------
+ | Affinity Controller Routes
+ |--------------------------------------------------------------------------
+ */
+
+Route::get('showallaffinitygroups', 'AffinityController@showAll');
+
+Route::post('deleteaffinitygroup', 'AffinityController@delete');
+
+Route::get('viewaffinitygroup', 'AffinityController@view');
+
+Route::post('addaffinitygroup', 'AffinityController@create');
+
+Route::post('editaffinitygroup', 'AffinityController@showEdit');
+
+Route::post('doeditaffinitygroup', 'AffinityController@edit');
+
+Route::post('joinaffinitygroup', 'AffinityController@join');
+
+Route::post('leaveaffinitygroup', 'AffinityController@leave');

@@ -32,6 +32,9 @@ class AffinityGroupDataService {
                     (name, description) 
                     VALUES ('$group', '$description')";
 
+        
+        //die($sql);
+        
         $this->conn->query($sql);
         
         $success = ($this->conn->affected_rows > 0);
@@ -43,9 +46,9 @@ class AffinityGroupDataService {
     {
         $sql = "SELECT name, description FROM affinity WHERE id = '$id' LIMIT 1";
         
-        $this->conn->query($sql);
+        $result = $this->conn->query($sql);
         
-        $row = $this->conn->fetch_assoc();
+        $row = $result->fetch_assoc();
         
         $name = $row['name'];
         $description = $row['description'];
@@ -60,34 +63,31 @@ class AffinityGroupDataService {
         $sql = "SELECT * FROM usergroups 
                     WHERE `affinity_id` = '$id'";
         
-        $this->conn->query($sql);
+        $result = $this->conn->query($sql);
         
         $userIDs = array();
         
-        while ($row = $this->conn->fetch_assoc())
+        while ($row = $result->fetch_assoc())
         {
-            $id = $row['users_id'];
-            array_push($userIDs);
+            $userID = $row['users_id'];
+            array_push($userIDs, $userID);
         }
         
-        
-        $group = ['name' => $name, 'description' => $description];
-        
-        return $group;
+        return $userIDs;
     }
     
     public function userInGroup(int $userID, int $id)
     {
-        $sql = "SELECT id FROM usergroups WHERE `user_id` = '$userID' AND `affinity_id` = '$id'";
+        $sql = "SELECT id FROM usergroups WHERE `users_id` = '$userID' AND `affinity_id` = '$id'";
         
-        $this->conn->query($sql);
+        $result = $this->conn->query($sql);
         
-        return ($this->conn->num_rows > 0);
+        return ($result->num_rows > 0);
     }
     
     public function deleteGroup(int $id)
     {
-        $sql = "DELETE FROM affinity_group WHERE id = '$id'";
+        $sql = "DELETE FROM affinity WHERE id = '$id'";
         
         $this->conn->query($sql);
         
@@ -96,7 +96,7 @@ class AffinityGroupDataService {
     
     public function updateGroup(int $id,string $name,string $desc)
     {
-        $sql = "UPDATE affinity SET `name` = '$name', `description` = '$description'
+        $sql = "UPDATE affinity SET `name` = '$name', `description` = '$desc'
                     WHERE `id` = '$id'";
         
         $this->conn->query($sql);
@@ -106,7 +106,7 @@ class AffinityGroupDataService {
     
     public function joinGroup(int $userID, int $id)
     {
-        $sql = "INSERT INTO usergroups (`user_id`, `affinity_id`)
+        $sql = "INSERT INTO usergroups (`users_id`, `affinity_id`)
                     VALUES('$userID', '$id')";
         
         $this->conn->query($sql);
@@ -116,10 +116,48 @@ class AffinityGroupDataService {
     
     public function leaveGroup(int $userID, int $id)
     {
-        $sql = "DELETE FROM usergroups WHERE `user_id` = '$userID', `affinity_id` = '$id'";
+        $sql = "DELETE FROM usergroups WHERE `users_id` = '$userID' AND `affinity_id` = '$id'";
         
         $this->conn->query($sql);
         
         return ($this->conn->affected_rows > 0);
+    }
+    
+    public function getAll()
+    {
+        $sql = "SELECT * FROM affinity";
+        
+        $result = $this->conn->query($sql);
+        
+        $groups = array();
+        
+        while ($row = $result->fetch_assoc())
+        {
+            $id = $row['id'];
+            $name = $row['name'];
+            $description = $row['description'];
+            $details = [$name, $description];
+            $groups[$id] = $details;
+        }
+        
+        return $groups;
+    }
+    
+    public function getByID(int $id)
+    {
+        $sql = "SELECT * FROM affinity
+                    WHERE `id` = '$id'";
+        
+        $result = $this->conn->query($sql);
+        
+        $row = $result->fetch_assoc();
+        $name = $row['name'];
+        $description = $row['description'];
+        $details = [
+            $name,
+            $description
+        ];
+        
+        return $details;
     }
 }

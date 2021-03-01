@@ -22,6 +22,7 @@ class PortfolioController extends BaseController
 
     private $user;
     private $business;
+
     
     //Function queries the database for the 
     public function search()
@@ -92,6 +93,7 @@ class PortfolioController extends BaseController
             'portfolioID' => $portfolioid,
         ];
         return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
+        //return view('portfolio')->with($data);
     }
     
     // Returns the port details page, with updated information.
@@ -199,6 +201,7 @@ class PortfolioController extends BaseController
         ];
         
         //Return to view page
+        //return view('portfolio')->with($data);
         return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
     }
     
@@ -223,6 +226,7 @@ class PortfolioController extends BaseController
             'portfolio' => $portfolio,
             'portfolioID' => $portfolioID,
         ];
+        return view('portfolio')->with($data);
         return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
     }
     
@@ -246,6 +250,7 @@ class PortfolioController extends BaseController
             'portfolio' => $portfolio,
             'portfolioID' => $portfolioID,
         ];
+        return view('portfolio')->with($data);
         return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
     }
 }

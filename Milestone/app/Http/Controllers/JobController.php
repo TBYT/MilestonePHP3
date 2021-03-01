@@ -27,7 +27,6 @@ class JobController extends BaseController
     //Function to add a job
     public function add()
     {
-        $this->pc = new PrivilegeCheck();
         //Initialize business service and job
         $this->businessService = new BusinessService();
         $this->job = new JobModel();
@@ -58,18 +57,21 @@ class JobController extends BaseController
         
         //Return view
         $data =  ['message' => $message];
-        return view($this->pc->SecurityisAdmin('admin\newjob'))->with($data);
+        return view('admin\newjob')->with($data);
     }
     
     //Function to show all jobs to the admin
     public function showAll()
     {
+        $this->pc = new PrivilegeCheck();
+        
         $this->businessService = new BusinessService();
         $jobs = $this->businessService->getAllJobs();
         
         $data = ['jobs' => $jobs];
         //Feels... Good. Man
-        return view('admin\alljobs')->with($data);
+        //return view('admin\alljobs')->with($data);
+        return view($this->pc->SecurityisAdmin('admin\alljobs'))->with($data);
     }
     
     //Function to delete a job

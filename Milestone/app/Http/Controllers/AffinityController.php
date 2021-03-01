@@ -34,6 +34,7 @@ class AffinityController extends BaseController
         $group = request()->get('name');
         $description = request()->get('description');
         
+        
         $message = 'Group Created!';
           
         if (!$this->businessService->createAffinityGroup($group, $description))
@@ -41,11 +42,14 @@ class AffinityController extends BaseController
             $message = 'Sorry, this group could not be created';
         }
         
+        $groups = $this->businessService->getAllAffinityGroups();
+        
         $data = [
             'message' => $message,
+            'groups' => $groups,
         ];
         
-        return view('')->with($data);
+        return view('allaffinitygroups')->with($data);
     }
     
     public function view()
@@ -64,10 +68,11 @@ class AffinityController extends BaseController
         $data = [
             'group' => $group,
             'users' => $users,
+            'groupID' => $id,
             'inGroup' => $inGroup,
         ];
         
-        return view('')->with($data);
+        return view('viewaffinitygroup')->with($data);
     }
     
     public function delete()
@@ -76,6 +81,7 @@ class AffinityController extends BaseController
         
         $id = request()->get('id');
         
+        
         $message = "Group Deleted!";
         
         if (!$this->businessService->deleteGroup($id))
@@ -83,11 +89,14 @@ class AffinityController extends BaseController
             $message = "Sorry, this group could not be deleted";
         }
         
+        $groups = $this->businessService->getAllAffinityGroups();
+        
         $data = [
+            'groups' => $groups,
             'message' => $message,
         ];
         
-        return view('')->with($data);
+        return view('allaffinitygroups')->with($data);
     }
     
     public function edit()
@@ -99,6 +108,7 @@ class AffinityController extends BaseController
         $newName = request()->get('name');
         $newDesc = request()->get('description');
         
+        
         $message = "Group Updated!";
         
         if (!$this->businessService->updateGroup($id, $newName, $newDesc))
@@ -106,19 +116,23 @@ class AffinityController extends BaseController
             $message = "Sorry, this group could not be updated";
         }
         
+        $groups = $this->businessService->getAllAffinityGroups();
+        
         $data = [
             'message' => $message,
+            'groups' => $groups,
         ];
         
-        return view('')->with($data);
+        return view('allaffinitygroups')->with($data);
     }
     
     public function join()
     {
         $this->businessService = new BusinessService();
         
-        $groupID = requset()->get('id');
+        $groupID = request()->get('id');
         $userID = $this->businessService->getUserID(session()->get('user'));
+        
         
         $message = "Group Joined";
         
@@ -127,19 +141,23 @@ class AffinityController extends BaseController
             $message = "Sorry, you could not join this group";
         }
 
+        $groups = $this->businessService->getAllAffinityGroups();
+        
         $data = [
-            'message', $message,
+            'message' => $message,
+            'groups' => $groups,
         ];
         
-        return view('')->with($data);
+        return view('allaffinitygroups')->with($data);
     }
     
     public function leave()
     {
         $this->businessService = new BusinessService();
         
-        $groupID = requset()->get('id');
+        $groupID = request()->get('id');
         $userID = $this->businessService->getUserID(session()->get('user'));
+        
         
         $message = "You have left the group";
         
@@ -148,10 +166,42 @@ class AffinityController extends BaseController
             $message = "Sorry, you could not leave this group";
         }
         
+        $groups = $this->businessService->getAllAffinityGroups();
+        
         $data = [
-            'message', $message,
+            'message' => $message,
+            'groups' => $groups,
         ];
         
-        return view('')->with($data);
+        return view('allaffinitygroups')->with($data);
+    }
+    
+    public function showAll()
+    {
+        $this->businessService = new BusinessService();
+        
+        $groups = $this->businessService->getAllAffinityGroups();
+        
+        $data = [
+            'groups' => $groups,
+        ];
+        
+        return view('allaffinitygroups')->with($data);
+    }
+    
+    public function showEdit()
+    {
+        $this->businessService = new BusinessService();
+        
+        $id = request()->get('id');
+        
+        $group = $this->businessService->getAffinityGroupById($id);
+        
+        $data = [
+            'group' => $group,
+            'id' => $id,
+        ];
+        
+        return view('admin/editaffinitygroup')->with($data);
     }
 }

@@ -11,6 +11,11 @@
 				<div class="card">
 					<div class="card-header">Admin Access</div>
 						<div class="card-body">
+						
+							@if (isset($message))
+							<h2>{{ $message }}</h2>
+							@endif
+							
 							<!-- Button to open user role page -->
 							<form method="get" action="roles">
 								<label for="roles">Suspend or update users</label><br>
@@ -20,6 +25,11 @@
             				<form method="get" action="showalljobs">
             					<label for="job">Add or edit job listings</label><br>
             					<button id="job">Job Listings</button>
+            				</form>
+            				<!-- Button to open affinity groups page -->
+            				<form method="get" action="showallaffinitygroups">
+            					<label for="group">Add or edit Affinity Groups</label><br>
+            					<button id="group">Affinity Groups</button>
             				</form>
             				<!-- Not Implemented <form method="get" action="portfoliorequest">
             					<label for="requests">Approve or deny user portfolio edits</label><br>
