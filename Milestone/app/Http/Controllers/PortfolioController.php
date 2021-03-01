@@ -14,6 +14,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\PortfolioModel;
 use App\Services\Business\BusinessService;
+use App\Services\Business\PrivilegeCheck;
 
 class PortfolioController extends BaseController
 {
@@ -21,7 +22,6 @@ class PortfolioController extends BaseController
 
     private $user;
     private $business;
-
     
     //Function queries the database for the 
     public function search()
@@ -67,6 +67,7 @@ class PortfolioController extends BaseController
     // Returns the account details page
     public function viewPortfolio()
     {
+        $this->pc = new PrivilegeCheck();
         $this->business = new BusinessService();
         
         // Gets the session user
@@ -90,7 +91,7 @@ class PortfolioController extends BaseController
             'portfolio' => $portdata ,
             'portfolioID' => $portfolioid,
         ];
-        return view('portfolio')->with($data);
+        return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
     }
     
     // Returns the port details page, with updated information.
@@ -177,6 +178,7 @@ class PortfolioController extends BaseController
     //TODO: this function is almost identical to addEducation and addSkill, maybe combine?
     public function addHistory()
     {
+        $this->pc = new PrivilegeCheck();
         //Initialize business layer and portfolio instance
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
@@ -197,12 +199,13 @@ class PortfolioController extends BaseController
         ];
         
         //Return to view page
-        return view('portfolio')->with($data);
+        return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
     }
     
     //Function to add education, see addHistory()
     public function addEducation()
     {
+        $this->pc = new PrivilegeCheck();
         //Initialize business layer and portfolio instance
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
@@ -220,11 +223,12 @@ class PortfolioController extends BaseController
             'portfolio' => $portfolio,
             'portfolioID' => $portfolioID,
         ];
-        return view('portfolio')->with($data);
+        return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
     }
     
     public function addSkill()
     {
+        $this->pc = new PrivilegeCheck();
         //Initialize business layer and portfolio instance
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
@@ -242,6 +246,6 @@ class PortfolioController extends BaseController
             'portfolio' => $portfolio,
             'portfolioID' => $portfolioID,
         ];
-        return view('portfolio')->with($data);
+        return view($this->pc->SecurityisLoggedIn('portfolio'))->with($data);
     }
 }

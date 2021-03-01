@@ -1,5 +1,7 @@
 <?php
 
+use App\Services\Business\PrivilegeCheck;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +20,8 @@
 |--------------------------------------------------------------------------
 */
 
+$this->pc = new PrivilegeCheck();
+
 //Index Page
 Route::get('/', function () {
     return view('welcome');
@@ -26,7 +30,7 @@ Route::get('/', function () {
 //loggedIn home page
 Route::get('/home', function()
 {
-   return view('home'); 
+    return view($this->pc->SecurityisLoggedIn('home')); 
 });
 
 //login page
@@ -42,13 +46,14 @@ Route::get('register', function()
 });
 
 //admin page
-Route::get('admin', function(){
-    return view('admin\adminactions');
+Route::get('admin', function()
+{
+    return view($this->pc->SecurityisAdmin('admin\adminactions'));
 });
 
 //addJob page
 Route::get('newjob', function () {
-    return view('admin\newjob');
+    return view($this->pc->SecurityisAdmin('admin\newjob'));
 });
 
 //contact page
@@ -58,12 +63,12 @@ Route::get('contact', function () {
 
 Route::get('jobsearch', function()
 {
-    return view('jobsearch');
+    return view($this->pc->SecurityisLoggedIn('jobsearch'));
 });
 
 Route::get('portfoliosearch', function()
 {
-   return view('searchportfolios'); 
+    return view($this->pc->SecurityisLoggedIn('searchportfolios')); 
 });
 
 /*
@@ -98,7 +103,7 @@ Route::post('editUser', 'UserController@editUser');
 //manages registration requests
 Route::post('register', 'UserController@register');
 
-Route::get('portfoliorequest', 'UserController@viewRequests');
+//Route::get('portfoliorequest', 'UserController@viewRequests');
 
 Route::post('approverequest', 'UserController@approveRequest');
 
@@ -113,7 +118,7 @@ Route::post('displayuser', 'UserController@displayUserRequest');
 |--------------------------------------------------------------------------
  */
 
-//Route for handling the addjob form
+//Route for handling the addjob form, admin
 Route::post('addjob', 'JobController@add');
 
 Route::get('showalljobs', 'JobController@showAll');

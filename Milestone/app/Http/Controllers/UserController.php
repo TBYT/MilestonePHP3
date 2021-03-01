@@ -13,16 +13,17 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use App\Services\Business\PrivilegeCheck;
 
 use App\Models\UserModel;
 use App\Services\Business\BusinessService;
+use Illuminate\Broadcasting\PrivateChannel;
 
 class UserController extends BaseController
 {
         use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     private $user;
-
     private $business;
 
     // Method to log user in
@@ -143,6 +144,7 @@ class UserController extends BaseController
     // Returns the account details page
     public function viewAccount()
     {
+        $this->pc = new PrivilegeCheck();
         $this->business = new BusinessService();
 
         // Gets the session user
@@ -152,7 +154,7 @@ class UserController extends BaseController
         $data = [
             'user' => $this->user,
         ];
-        return view('account')->with($data);
+        return view($this->pc->SecurityisLoggedIn('account'))->with($data);
     }
 
     // TODO: return success or error message as well
@@ -188,6 +190,8 @@ class UserController extends BaseController
     // function shows admin page
     public function manageRoles()
     {
+        $this->pc = new PrivilegeCheck();
+        
         // Get all users that aren't admin
         $this->business = new BusinessService();
         $users = $this->business->getAllUsers();
@@ -199,8 +203,7 @@ class UserController extends BaseController
             'users' => $users,
             'user' => session()->get('user')
         ];
-
-        return view('admin\manageroles')->with($data);
+        return view($this->pc->SecurityisAdmin('admin\manageroles'))->with($data);
     }
 
     // Function to logout

@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Models\JobModel;
 use App\Services\Business\BusinessService;
+use App\Services\Business\PrivilegeCheck;
 
 class JobController extends BaseController
 {
@@ -26,6 +27,7 @@ class JobController extends BaseController
     //Function to add a job
     public function add()
     {
+        $this->pc = new PrivilegeCheck();
         //Initialize business service and job
         $this->businessService = new BusinessService();
         $this->job = new JobModel();
@@ -56,7 +58,7 @@ class JobController extends BaseController
         
         //Return view
         $data =  ['message' => $message];
-        return view('admin\newjob')->with($data);
+        return view($this->pc->SecurityisAdmin('admin\newjob'))->with($data);
     }
     
     //Function to show all jobs to the admin

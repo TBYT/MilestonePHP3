@@ -11,7 +11,7 @@
     <title>EPortfolio</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('public/js/app.js') }}" defer></script>
     <style>
 
      </style>
@@ -21,7 +21,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/css/app.css') }}" rel="stylesheet">
 </head>
 <body style='
  background-image: linear-gradient(black,blue, grey); 
@@ -41,7 +41,7 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                     <a style="color: white" class="navbar-brand" href="{{ url('/') }}">
-						<img src="../resources/assets/logo.jpg" width="100px" height="100px">
+						<img src="resources/assets/logo.jpg" width="100px" height="100px">
 						</a>
                     </ul>
 
