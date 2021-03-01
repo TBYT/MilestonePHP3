@@ -11,7 +11,7 @@
     <title>EPortfolio</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('public/js/app.js') }}" defer></script>
     <style>
 
      </style>

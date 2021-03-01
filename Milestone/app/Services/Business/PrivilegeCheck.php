@@ -1,6 +1,11 @@
 <?php
 namespace App\Services\Business;
 
+/**
+ * Author: Brian Basinger
+ * CST-256
+ * 2.28.21
+ */
 class PrivilegeCheck
 {
     function SecurityisAdmin($in)

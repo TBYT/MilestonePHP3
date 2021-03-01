@@ -161,7 +161,7 @@ Route::get('addskill', 'PortfolioController@addSkill');
  |--------------------------------------------------------------------------
  */
 
-Route::get('showallaffinitygroups', 'AffinityController@showAll');
+Route::get('allaffinitygroups', 'AffinityController@showAll');
 
 Route::post('deleteaffinitygroup', 'AffinityController@delete');
 
