@@ -27,7 +27,7 @@
             					<button id="job">Job Listings</button>
             				</form>
             				<!-- Button to open affinity groups page -->
-            				<form method="get" action="showallaffinitygroups">
+            				<form method="get" action="allaffinitygroups">
             					<label for="group">Add or edit Affinity Groups</label><br>
             					<button id="group">Affinity Groups</button>
             				</form>
