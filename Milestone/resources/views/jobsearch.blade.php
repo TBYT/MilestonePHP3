@@ -36,6 +36,10 @@
 	       left:14%;
 	       width:200px;
 	   }   
+	   .display
+	   {
+	       width:100%;
+	   }
 	</style>
 	@section('content')
     	<div class="card">
@@ -73,27 +77,34 @@
         						
         				@if (session('message'))
                         	<h1 align="center" class="card-header"> {{ session('message') }} </h1>
-                    			<ul><hr>
-                    				<!-- Each job in the list of results -->
-                    				<!-- TODO: need an empty list error page -->
+                    		<table id="myTable" class="display">
+                    			<thead>
+                        			<tr>
+                        				<th>Title</th>
+                        				<th>Company</th>
+                        				<th>View Details</th>
+                        			</tr>
+                    			</thead>
+                    			<tbody>
+                        			<!-- Each job in the list of results -->
+                        			<!-- TODO: need an empty list error page -->
                         			@foreach (session('jobs') as $id => $job)
-                        			<li>
-                        				
-                       				<!-- Main title: job title, subheading: company -->
-                       				<h2>
-                       					Title: {{ $job->getTitle() }}
-                       				</h2>
-                       				<h5>Company: {{$job->getCompany() }}</h5>
-                       				<!-- Button to view full job details -->
-                       					<form action="viewjob" method="post">
-                       						{{csrf_field()}}
-                       						<input type="hidden" name="id" value="{{ $id }}"/>
-                       						<input type="submit" value="View"/>
-                       					</form>
-                       					<hr>
-            	       				@endforeach
-                   				</ul>
-                   			<form action="jobsearch" method="get">
+                         			<tr>
+                        				<!-- Main title: job title, subheading: company -->
+                         				<td>Title: {{ $job->getTitle() }}</td>
+                        				<td>Company: {{$job->getCompany() }}</td>
+                          				<td><!-- Button to view full job details -->
+                        					<form action="viewjob" method="post">
+                        						{{csrf_field()}} 
+                        						<input type="hidden" name="id" value="{{ $id }}"/>
+                        						<input type="submit" value="View"/>
+                        					</form>
+                        				</td>
+                       				</tr>
+                         			@endforeach
+                    			</tbody>
+                     		</table>
+							<form action="jobsearch" method="get">
                    				<input type="submit" value="Clear Search"/>
                    			</form>
                			@endif
