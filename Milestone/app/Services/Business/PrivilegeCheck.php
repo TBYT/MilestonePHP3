@@ -1,12 +1,15 @@
 <?php
 namespace App\Services\Business;
 
+use Illuminate\Routing\Router;
+
 class PrivilegeCheck
 {
+    //depreciated
     function SecurityisAdmin($in)
     {
-        //Router::class($in);
-        if (session()->get('isAdmin') == false)
+        Router::class($in);
+         if (session()->get('isAdmin') == false)
         {
             return "welcome";
         }

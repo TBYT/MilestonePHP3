@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Services\Business\BusinessService;
 use Illuminate\Support\Facades\Bus;
-use App\Services\Business\PrivilegeCheck;
+//use App\Services\Business\PrivilegeCheck;
 
 class AffinityController extends BaseController
 {
@@ -60,7 +60,7 @@ class AffinityController extends BaseController
     //Function to view one group
     public function view()
     {
-        $this->pc = new PrivilegeCheck();
+        //$this->pc = new PrivilegeCheck();
         //Initialize business layer
         $this->businessService = new BusinessService();
         
@@ -84,7 +84,7 @@ class AffinityController extends BaseController
             'inGroup' => $inGroup,
         ];
         
-        return view($this->pc->SecurityisLoggedIn('viewaffinitygroup'))->with($data);
+        return view('viewaffinitygroup')->with($data);
     }
     
     //Function to delete an affinity group
@@ -212,7 +212,7 @@ class AffinityController extends BaseController
     //Function to show all groups
     public function showAll()
     {
-        $this->pc = new PrivilegeCheck();
+        //$this->pc = new PrivilegeCheck();
         //Initialize business layer
         $this->businessService = new BusinessService();
         
@@ -223,13 +223,13 @@ class AffinityController extends BaseController
             'groups' => $groups,
         ];
         
-        return view($this->pc->SecurityisLoggedIn('allaffinitygroups'))->with($data);
+        return view('allaffinitygroups')->with($data);
     }
     
     //Show the edit page for a group
     public function showEdit()
     {
-        $this->pc = new PrivilegeCheck();
+        //$this->pc = new PrivilegeCheck();
         //Initialize business layer
         $this->businessService = new BusinessService();
         
@@ -245,6 +245,6 @@ class AffinityController extends BaseController
             'id' => $id,
         ];
         
-        return view($this->pc->SecurityisAdmin('admin/editaffinitygroup'))->with($data);
+        return view('admin/editaffinitygroup')->with($data);
     }
 }

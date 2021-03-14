@@ -1,6 +1,6 @@
 <?php
 
-use App\Services\Business\PrivilegeCheck;
+//use App\Services\Business\PrivilegeCheck;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ use App\Services\Business\PrivilegeCheck;
 |--------------------------------------------------------------------------
 */
 
-$this->pc = new PrivilegeCheck();
+//$this->pc = new PrivilegeCheck();
 
 //Index Page
 Route::get('/', function () {
@@ -30,7 +30,7 @@ Route::get('/', function () {
 //loggedIn home page
 Route::get('/home', function()
 {
-    return view($this->pc->SecurityisLoggedIn('home')); 
+    return view('home'); 
 });
 
 //login page
@@ -47,12 +47,12 @@ Route::get('register', function()
 
 //admin page
 Route::get('admin', function(){
-    return view($this->pc->SecurityisAdmin('admin\adminactions'));
+    return view('admin\adminactions');
 });
 
 //addJob page
 Route::get('newjob', function () {
-    return view($this->pc->SecurityisAdmin('admin\newjob'));
+    return view('admin\newjob');
 });
 
 //contact page
@@ -62,17 +62,17 @@ Route::get('contact', function () {
 
 Route::get('jobsearch', function()
 {
-    return view($this->pc->SecurityisLoggedIn('jobsearch'));
+    return view('jobsearch');
 });
 
 Route::get('portfoliosearch', function()
 {
-    return view($this->pc->SecurityisLoggedIn('searchportfolios')); 
+    return view('searchportfolios'); 
 });
 
 Route::get('newaffinitygroup', function()
 {
-    return view($this->pc->SecurityisAdmin('admin\newaffinitygroup'));
+    return view('admin\newaffinitygroup');
 });
 
 /*
@@ -107,7 +107,7 @@ Route::post('editUser', 'UserController@editUser');
 //manages registration requests
 Route::post('register', 'UserController@register');
 
-Route::get('portfoliorequest', 'UserController@viewRequests');
+//Route::get('portfoliorequest', 'UserController@viewRequests');
 
 Route::post('approverequest', 'UserController@approveRequest');
 

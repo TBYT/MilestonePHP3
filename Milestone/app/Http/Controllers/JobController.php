@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Models\JobModel;
 use App\Services\Business\BusinessService;
-use App\Services\Business\PrivilegeCheck;
+//use App\Services\Business\PrivilegeCheck;
 
 class JobController extends BaseController
 {
@@ -63,7 +63,7 @@ class JobController extends BaseController
     //Function to show all jobs to the admin
     public function showAll()
     {
-        $this->pc = new PrivilegeCheck();
+        //$this->pc = new PrivilegeCheck();
         
         $this->businessService = new BusinessService();
         $jobs = $this->businessService->getAllJobs();
@@ -71,7 +71,7 @@ class JobController extends BaseController
         $data = ['jobs' => $jobs];
         //Feels... Good. Man
         //return view('admin\alljobs')->with($data);
-        return view($this->pc->SecurityisAdmin('admin\alljobs'))->with($data);
+        return view('admin\alljobs')->with($data);
     }
     
     //Function to delete a job

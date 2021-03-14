@@ -13,10 +13,11 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\UserModel;
 use App\Services\Business\BusinessService;
-use App\Services\Business\PrivilegeCheck;
+//use App\Services\Business\PrivilegeCheck;
 
 class UserController extends BaseController
 {
@@ -29,6 +30,7 @@ class UserController extends BaseController
     // Method to log user in
     public function login()
     {
+        Log::info("Entering Login Controller Index()");
         $this->business = new BusinessService();
 
         // Grab user details
@@ -49,7 +51,6 @@ class UserController extends BaseController
                 // die(print_r(session()->get('user')));
                 $isAdmin = $this->business->isAdmin($id);
                 session()->put('isAdmin', $isAdmin);
-                
                 return view('home');
             } // User suspended
             else {
@@ -144,7 +145,7 @@ class UserController extends BaseController
     // Returns the account details page
     public function viewAccount()
     {
-        $this->pc = new PrivilegeCheck();
+        //$this->pc = new PrivilegeCheck();
         
         $this->business = new BusinessService();
 
@@ -157,7 +158,7 @@ class UserController extends BaseController
         ];
         //return view('account')->with($data);
         
-        return view($this->pc->SecurityisLoggedIn('account'))->with($data);
+        return view('account')->with($data);
     }
 
     // TODO: return success or error message as well
@@ -193,7 +194,7 @@ class UserController extends BaseController
     // function shows admin page
     public function manageRoles()
     {
-        $this->pc = new PrivilegeCheck();
+        //$this->pc = new PrivilegeCheck();
         
         // Get all users that aren't admin
         $this->business = new BusinessService();
@@ -207,7 +208,7 @@ class UserController extends BaseController
             'user' => session()->get('user')
         ];
 
-        return view($this->pc->SecurityisAdmin('admin\manageroles'))->with($data);
+        return view('admin\manageroles')->with($data);
         //return view('admin\manageroles')->with($data);
     }
 
