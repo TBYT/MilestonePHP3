@@ -22,10 +22,10 @@
             					<button id="roles">User Roles</button>
             				</form>
             				<!-- Button to open job listings page -->
-            				<form method="get" action="showalljobs">
+            				<!-- <form method="get" action="showalljobs">
             					<label for="job">Add or edit job listings</label><br>
             					<button id="job">Job Listings</button>
-            				</form>
+            				</form> -->
             				<!-- Button to open affinity groups page -->
             				<form method="get" action="allaffinitygroups">
             					<label for="group">Add or edit Affinity Groups</label><br>

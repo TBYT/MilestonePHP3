@@ -209,7 +209,6 @@ class UserController extends BaseController
         ];
 
         return view('admin\manageroles')->with($data);
-        //return view('admin\manageroles')->with($data);
     }
 
     // Function to logout

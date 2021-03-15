@@ -36,7 +36,7 @@ Route::get('/home', function()
 //login page
 Route::get('login', function()
 {
-   return view('auth/login'); 
+   return view('auth\login'); 
 });
 
 //register page
@@ -124,6 +124,8 @@ Route::post('displayuser', 'UserController@displayUserRequest');
 
 //Route for handling the addjob form
 Route::post('addjob', 'JobController@add');
+
+Route::post('apply', 'JobController@apply');
 
 Route::get('showalljobs', 'JobController@showAll');
 

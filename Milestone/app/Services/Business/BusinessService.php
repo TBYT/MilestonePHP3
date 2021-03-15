@@ -865,4 +865,29 @@ class BusinessService
         $dbConn->closeConnection();
         return $group;
     }
+    
+    public function getAppliedJobs($id)
+    {
+        //Initialize business layer
+        $dbConn = new DataAccess($this->dbname);
+        $jobsDAO = new JobDataService($dbConn->getConnection());
+            
+        //get jobs user applied to
+        $jobs = $jobsDAO->appliedJobs($id);
+        $dbConn->closeConnection();
+            
+        return $jobs;
+    }
+    
+    public function jobApply($userID, $jobid)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $jobsDAO = new JobDataService($dbConn->getConnection());
+        
+        $success = $jobsDAO->apply($userID, $jobid);
+        
+        //Close the connection and return if the query was successful
+        $dbConn->closeConnection();
+        return $success;
+    }
 }

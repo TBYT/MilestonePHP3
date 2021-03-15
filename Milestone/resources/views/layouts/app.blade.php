@@ -69,6 +69,7 @@
                             <a class="dropdown-item" href="admin">Admin</a>
                             @endif
                             <a class="dropdown-item" href="account">Settings</a>
+                            <a class="dropdown-item" href="showalljobs">Job Listings</a>
                             <a class="dropdown-item" href="portfolio">Portfolio</a>
                             <a class="dropdown-item" href="logout">Log Out</a>
                           </div>

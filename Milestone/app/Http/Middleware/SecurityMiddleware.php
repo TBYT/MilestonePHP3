@@ -31,7 +31,7 @@ class SecurityMiddleware
         Log::info($secureCheck ? "Security Middleware in handle()... Needs Security" : "Security Middleware in handle()... No Security Required");
         //Step 3: If entering a secure URI with no security token then redirect to the login page.
         
-        if(( $request->is('showalljobs') ||$request->is('roles') || $request->is('/roles') || $request->is('newaffinitygroup') || $request->is('admin') || $request->is('newjob')) && (session()->get('isAdmin') == false))
+        if(( $request->is('roles') || $request->is('/roles') || $request->is('newaffinitygroup') || $request->is('admin') || $request->is('newjob')) && (session()->get('isAdmin') == false))
         {
             $secureCheck = true;
         }
