@@ -24,14 +24,15 @@ class SecurityMiddleware
         
         //Step 2: Run the business rules that check for the URI's that you do not need to secure.
         $secureCheck = true;
-        if((session()->get('user') == true) || $request->is('/') || $request->is('doLogin') || $request->is('suspended') || $request->is('register') || $request->is('login'))
+        if((session()->get('user') == true) || $request->is('/') || $request->is('doLogin') || $request->is('suspended') || $request->is('register') || $request->is('login') 
+            || $request->is('jobrest/*') || $request->is('jobrest') || $request->is('portfoliorest') || $request->is('portfoliorest/*'))
         {
             $secureCheck = false;
         }
         Log::info($secureCheck ? "Security Middleware in handle()... Needs Security" : "Security Middleware in handle()... No Security Required");
         //Step 3: If entering a secure URI with no security token then redirect to the login page.
         
-        if(( $request->is('roles') || $request->is('/roles') || $request->is('newaffinitygroup') || $request->is('admin') || $request->is('newjob')) && (session()->get('isAdmin') == false))
+        if(($request->is('showalljobs') ||$request->is('roles') || $request->is('/roles') || $request->is('newaffinitygroup') || $request->is('admin') || $request->is('newjob')) && (session()->get('isAdmin') == false))
         {
             $secureCheck = true;
         }

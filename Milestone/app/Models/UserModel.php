@@ -20,6 +20,7 @@ class UserModel
     private $city;
     private $state;
     private $isSuspended;
+    private $isVerified;
     
     //Constructor
     public function __construct()
@@ -38,6 +39,7 @@ class UserModel
         $this->webLink = $webLink;
         $this->city = $city;
         $this->state = $state;
+        $this->isVerified = false;
     }
     
     public function isSuspended()
@@ -193,5 +195,15 @@ class UserModel
     public function getPassword()
     {
         return $this->password;
+    }
+    
+    public function setIsVerified(bool $verified)
+    {
+        $this->isVerified = $verified;
+    }
+    
+    public function getIsVerified()
+    {
+        return $this->isVerified;
     }
 }

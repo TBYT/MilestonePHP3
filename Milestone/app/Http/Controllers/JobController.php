@@ -68,22 +68,11 @@ class JobController extends BaseController
         $this->businessService = new BusinessService();
         $jobs = $this->businessService->getAllJobs();
         
-        $userID = $this->businessService->getUserID(session()->get('user'));
-        $appliedjobsids = $this->businessService->getAppliedJobs($userID);
-        
-        $appliedjobs = [];
-        foreach ($appliedjobsids as $id)
-        {
-            $appliedjobs[$id] = $this->businessService->getJob($id);
-        }
-        
-        $data = [
-            'appliedjobs' => $appliedjobs,
-            'jobs' => $jobs,
-        ];
-        //die(print_r($data));
-        return view('alljobs')->with($data);
+        $data = ['jobs' => $jobs,];
+        //die (print_r($data));
         //Feels... Good. Man
+        //return view('admin\alljobs')->with($data);
+        return view('admin\alljobs')->with($data);
     }
     
     //Function to delete a job
@@ -101,7 +90,7 @@ class JobController extends BaseController
             'message' => 'Job Deleted!'
         ];
         
-        return view('alljobs')->with($data);
+        return view('admin\alljobs')->with($data);
     }
     
     
@@ -146,7 +135,7 @@ class JobController extends BaseController
             'message' => $message
         ];
         
-        return view('alljobs')->with($data);
+        return view('admin\alljobs')->with($data);
     }
     
     //Function to edit a job
@@ -241,21 +230,5 @@ class JobController extends BaseController
         
         //Run Data Validation Rules
         $this->validate($request, $rules);
-    }
-    
-    public function apply()
-    {
-        $this->businessService = new BusinessService();
-        $jobID = request()->get('id');
-        $userID = $this->businessService->getUserID(session()->get('user'));
-        
-        //apply to the job
-        if ($this->businessService->jobApply($userID, $jobID))
-        {
-            //die("success");
-        }
-        
-        //Return all jobs view
-        return $this->showAll();
     }
 }

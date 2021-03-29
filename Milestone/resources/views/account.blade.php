@@ -24,6 +24,9 @@
             <div align="center" class="card">
                 <div class="card-header"><h3>Hello, {{ session()->get('user')->getName() }}</h3></div>
 			<h3> Account Details </h3>
+			@if(isset($message))
+			<h3> {{$message}} </h3>
+			@endif
 			
 			<form action="editUser" method="post">
 			{{csrf_field()}}
@@ -55,6 +58,15 @@
 				<br><br><br>
 				<input type="submit" value="Save Changes"/>
 			</form>
+			@if(!$user->getIsVerified())
+    			<form action="sendemail" method="get">
+    				{{csrf_field()}}
+    				<label for="email">Verify Account</label>
+    				<input type="submit" value="Verify" name="email" id="email"/><br>
+    				<hidden name="email" value="{{ $user->getEmail() }}"/>
+    				<hidden name="name" value="{{ $user->getName() }}"/>
+    			</form>
+    		@endif
 			</div>
 			</div>
 		</div>

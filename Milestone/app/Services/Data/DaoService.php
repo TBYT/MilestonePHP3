@@ -1,27 +1,39 @@
 <?php
-
-/**
- * Author: Thomas Biegel
- * CST-256
- * 2.22.21
- */
-
 namespace App\Services\Data;
 
 use App\Models\UserModel;
 use Exception;
-use mysqli;
+use Symfony\Component\CssSelector\Parser\Token;
+use Symfony\Polyfill\Intl\Idn\Info;
+use PhpParser\Node\Stmt\For_;
 
 //Data Access Class
-class UserDataService
+class DaoService
 {
+    //Define the connection string
+    //TODO: needs to be changed to reflect hosting site
     private $conn;
+    private $servername = "localhost";
+    private $username = "root";
+    private $password = "root";
+    
+    //These 2 might need to be changed
+    private $dbname = "dbcst256";
+    private $port = 3306;
+    
+    private $dbQuery;
     
     //Constructor that creates a connection with the database
-    public function __construct($conn)
+    public function __construct()
     {
         //Create a connection to the database
-        $this->conn = $conn;
+        $this->conn = mysqli_connect($this->servername, $this->username, $this->password, $this->dbname);
+        
+        //Make sure to always test the connection and see if there are any errors.
+        if ($this->conn == false || $this->conn == null)
+        {
+            die(mysqli_error($this->conn));
+        }
     }
     
     /**
@@ -48,7 +60,8 @@ class UserDataService
         //run statement          
         mysqli_query($this->conn, $sql);
         $success = (mysqli_affected_rows($this->conn) > 0);
-        
+      
+        mysqli_close($this->conn);
         return $success;
     }
     
@@ -72,6 +85,7 @@ class UserDataService
         //Query statement, return whether it affects any rows
         mysqli_query($this->conn, $sql);
         $success = mysqli_affected_rows($this->conn) > 0;
+        mysqli_close($this->conn);
         return $success;
     }
     
@@ -86,6 +100,7 @@ class UserDataService
                     WHERE id = '$id'";
         
         mysqli_query($this->conn, $sql);
+        mysqli_close($this->conn);
     }
     
     /**
@@ -98,10 +113,11 @@ class UserDataService
         $sql = "DELETE FROM user 
                 WHERE id = '$id'";
         
-        //die($sql);
+       // die($sql);
         
         mysqli_query($this->conn, $sql);
         $success = (mysqli_affected_rows($this->conn) > 0);
+        mysqli_close($this->conn);
         
         return $success;
     }
@@ -123,7 +139,8 @@ class UserDataService
         $role = $row['tbl_roles_id_role'];
         
         
-        //mysqli_free_result($result);
+        mysqli_free_result($result);
+        mysqli_close($this->conn);
         
         //Assume they are standard user
         if ($role == 2)
@@ -145,6 +162,7 @@ class UserDataService
                 WHERE id = '$id'";
         
         mysqli_query($this->conn, $sql);
+        mysqli_close($this->conn);
     }
     
     /**
@@ -158,25 +176,23 @@ class UserDataService
         $sql = "SELECT id FROM user
                 WHERE email = '{$user->getEmail()}' AND password = '{$user->getPassword()}'";
         
-        try 
+        //die($sql);
+        
+        //Search for user, assume one is not found
+        $result = mysqli_query($this->conn, $sql);
+        $userID = 0;
+        
+        //If there are results, fetch id
+        if (mysqli_num_rows($result) > 0)
         {
-            $result = $this->conn->query($sql);
-            $userID = 0;
-            
-            //If there are results, fetch id
-            if (mysqli_num_rows($result) > 0)
-            {
-                //I don't remember if this is how you do it, but will find out I guess
-                $row = mysqli_fetch_assoc($result);
-                $userID = $row['id'];
-            }
-            //mysqli_free_result($result);
-            
-            return $userID;
-        } 
-        catch (Exception $e) {
-            echo $e->getMessage();
+            //I don't remember if this is how you do it, but will find out I guess
+            $row = mysqli_fetch_assoc($result);
+            $userID = $row['id'];
         }
+        mysqli_free_result($result);
+        mysqli_close($this->conn);
+        
+        return $userID;
     }
     
     /**
@@ -205,9 +221,9 @@ class UserDataService
         $user->setBio($row['bio']);
         $user->setWebLink($row['website']);
         $user->setIsSuspended($row['tbl_roles_id_role'] == 0);
-        $user->setIsVerified($row['verified'] == 1);
         
-        //mysqli_free_result($result);
+        mysqli_free_result($result);
+        mysqli_close($this->conn);
         
         return $user;
     }
@@ -237,7 +253,7 @@ class UserDataService
             $user->setIsSuspended($row['tbl_roles_id_role'] == 0);
             
             //have to create new Dao, want to fix this somehow
-            $dao = new UserDataService($this->conn);
+            $dao = new DaoService();
             
             $id = $dao->getUserID($user); 
             
@@ -247,7 +263,11 @@ class UserDataService
             $users += array($id => $user); 
         }
         
-        //mysqli_free_result($result);
+        mysqli_free_result($result);
+        //I don't know what happened to mysqli, but I can't run this...
+        //mysqli_close($this->conn);
+        
+        //die(print_r($users));
         
         return $users;
     }
@@ -263,137 +283,13 @@ class UserDataService
                 WHERE id = '$id'";
         
         //If their role id is 0, they are suspended
-        //die($this->conn->ping());
-        $result = $this->conn->query($sql);
+        $result = mysqli_query($this->conn, $sql);
         $row = $result->fetch_assoc();
         $isSuspended = $row['tbl_roles_id_role'] == 0;
         
-        //mysqli_free_result($result);
+        mysqli_free_result($result);
+        mysqli_close($this->conn);
         
         return $isSuspended;
-    }
-    
-    /**
-     * search through the users by the specified name
-     * TODO: improve, include all properties
-     * @param string $pattern
-     * @return array
-     */
-    public function searchUsers(string $pattern)
-    {
-        //Craft and query sql
-        $sql = "SELECT * FROM user WHERE name LIKE '%$pattern%'";
-        $result = $this->conn->query($sql);
-        
-        //Intialize return array
-        $users = array();
-        
-        //Grab each matching user
-        while ($row = $result->fetch_assoc())
-        {
-            $user = new UserModel();
-            
-            $user->setName($row['name']);
-            $user->setEmail($row['email']);
-            $user->setPassword($row['password']);
-            $user->setCity($row['city']);
-            $user->setState($row['state']);
-            $user->setField($row['field']);
-            $user->setPicture($row['picture']);
-            $user->setBio($row['bio']);
-            $user->setWebLink($row['website']);
-            $user->setIsSuspended($row['tbl_roles_id_role'] == 0);
-            
-            array_push($users, $user);
-        }
-        
-        //Return array
-        return $users;
-    }
-    
-    //FUNCTIONS NOT IMPLEMENTED YET
-    //There is an item in the request table
-    //It needs to be copied to the portfolio table
-    
-    public function approveRequest($id)
-    {
-        $sql = "SELECT (education_id, skill_id, history_id)
-                FROM requests
-                WHERE id = '$id'";
-        
-        $educationID = -1;
-        $historyID = -1;
-        $skillID = -1;
-        
-        
-        $result = $this->conn->query($sql);
-        if ($result->num_rows > 0)
-        {
-            $row = $result->fetch_assoc();
-            $educationID = $row['education_id'];
-            $historyID = $row['history_id'];
-            $skillID = $row['skill_id'];
-        }
-        else return false;
-        
-        $sql = "UPDATE portfolio
-                SET education_id = '$educationID',
-                history_id = '$historyID',
-                skill_id = '$skillID'
-                WHERE user_id = '$id'";
-        
-        $this->conn->query($sql);
-        
-        $sql = "DELETE FROM request
-                WHERE user_id = '$id'";
-        
-        $this->conn->query($sql);
-    }
-    
-    public function denyRequest($id)
-    {
-        $sql = "DELETE FROM request
-                WHERE user_id = '$id'";
-        
-        $this->conn->query($sql);
-    }
-    
-    /**
-     * Function to get all requests from the request table
-     * Note: This function does not return user data, just the ids
-     * of the users with active requests.
-     * Their data is collected in the business service, this might be horribly inneficient, I dunno
-     */
-    public function getAllRequests()
-    {
-        $sql = "SELECT user_id
-                FROM request";
-        
-        $result = $this->conn->query($sql);
-        
-        $users = array();
-        
-        while ($row = $result->fetch_assoc())
-        {
-            $id = $row['user_id'];
-            
-            //Apparently using array_push takes longer,
-            //but the other methods I found were giving warnings, so I used it
-            array_push($users, $id);
-        }
-        
-        $this->conn->free_result();
-        return $users;
-    }
-    
-    /**
-     * function to verify a user
-     * @param int $id the user to verify
-     * @return boolean whether the user was verified
-     */
-    public function verifyUser(int $id)
-    {
-        $sql = "UPDATE user set verified = '1' WHERE id = '$id'";
-        $this->conn->query($sql);
     }
 }

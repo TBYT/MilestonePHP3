@@ -36,7 +36,7 @@ Route::get('/home', function()
 //login page
 Route::get('login', function()
 {
-   return view('auth\login'); 
+   return view('auth/login'); 
 });
 
 //register page
@@ -73,6 +73,11 @@ Route::get('portfoliosearch', function()
 Route::get('newaffinitygroup', function()
 {
     return view('admin\newaffinitygroup');
+});
+
+Route::get('verify', function()
+{
+   return view('verify'); 
 });
 
 /*
@@ -116,6 +121,10 @@ Route::post('denyrequest', 'UserController@denyRequest');
 //Displays an account update request for a single user
 Route::post('displayuser', 'UserController@displayUserRequest');
 
+Route::get('sendemail', 'MailController@verificationEmail');
+
+Route::post('verifyuser', 'MailController@testCode');
+
 /*
 |--------------------------------------------------------------------------
 | Job Controller Routes
@@ -124,8 +133,6 @@ Route::post('displayuser', 'UserController@displayUserRequest');
 
 //Route for handling the addjob form
 Route::post('addjob', 'JobController@add');
-
-Route::post('apply', 'JobController@apply');
 
 Route::get('showalljobs', 'JobController@showAll');
 
@@ -178,3 +185,13 @@ Route::post('doeditaffinitygroup', 'AffinityController@edit');
 Route::post('joinaffinitygroup', 'AffinityController@join');
 
 Route::post('leaveaffinitygroup', 'AffinityController@leave');
+
+/*
+ |--------------------------------------------------------------------------
+ | REST Services API Routes
+ |--------------------------------------------------------------------------
+ */
+
+Route::resource('/jobrest', 'JobAPIController');
+Route::resource('/portfoliorest', 'PortfolioAPIController');
+

@@ -92,6 +92,7 @@ class UserController extends BaseController
             session()->put('user', $this->user);
             session()->put('isAdmin', $isAdmin);
 
+            //return redirect('sendemail');
             return view('home');
         } 
         else {
@@ -209,6 +210,7 @@ class UserController extends BaseController
         ];
 
         return view('admin\manageroles')->with($data);
+        //return view('admin\manageroles')->with($data);
     }
 
     // Function to logout

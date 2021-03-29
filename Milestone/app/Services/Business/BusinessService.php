@@ -221,6 +221,19 @@ class BusinessService
         //List is an associative array of userIds mapped to full names
         return $list;
     }
+
+    /**
+     * Function to verify a user
+     * @param int $id the id of the user to verify
+     * @return bool whether the user was verified
+     */
+    public function verifyUser(int $id)
+    {
+        $dbConn = new DataAccess($this->dbname);
+        $userDAO = new UserDataService($dbConn->getConnection());
+        $userDAO->verifyUser($id);
+        $dbConn->closeConnection();
+    }
     
     /*******************************************************************
      * Job Functions
@@ -864,30 +877,5 @@ class BusinessService
         //Close the connection and return the group
         $dbConn->closeConnection();
         return $group;
-    }
-    
-    public function getAppliedJobs($id)
-    {
-        //Initialize business layer
-        $dbConn = new DataAccess($this->dbname);
-        $jobsDAO = new JobDataService($dbConn->getConnection());
-            
-        //get jobs user applied to
-        $jobs = $jobsDAO->appliedJobs($id);
-        $dbConn->closeConnection();
-            
-        return $jobs;
-    }
-    
-    public function jobApply($userID, $jobid)
-    {
-        $dbConn = new DataAccess($this->dbname);
-        $jobsDAO = new JobDataService($dbConn->getConnection());
-        
-        $success = $jobsDAO->apply($userID, $jobid);
-        
-        //Close the connection and return if the query was successful
-        $dbConn->closeConnection();
-        return $success;
     }
 }

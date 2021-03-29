@@ -188,43 +188,5 @@ class JobDataService
         
         return $jobs;
     }
-    
-    public function apply(int $userID, int $jobid)
-    {
-        $sql = "INSERT INTO application (`user`, `job`)
-                    VALUES('$userID', '$jobid')";
-        
-        //die($sql);
-        
-        $this->conn->query($sql);
-        //If the number of rows affected is greater than 0, return true
-        $success = $this->conn->affected_rows > 0;
-        return $success;
-    }
-    
-    public function appliedJobs($id)
-    {
-        $sql = "SELECT * FROM application
-                    WHERE `user` = '$id'";
-        
-        $result = $this->conn->query($sql);
-        
-        $jobs = array();
-        
-        $counter = 0;
-        while ($row = $result->fetch_assoc())
-        {
-            //$appid = $row['id'];
-            //$user = $row['user'];
-            $job = $row['job'];
-            //$details = [ $user, $job ];
-            $jobs[$counter] = $job;
-            $counter++;
-        }
-        //Free the result and return the array
-        mysqli_free_result($result);
-        
-        return $jobs;
-    }
 }
 
