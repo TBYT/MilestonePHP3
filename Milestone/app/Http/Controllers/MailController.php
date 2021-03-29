@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Mail;
 use App\Services\Business\BusinessService;
+use App\Services\Data\Utility\ILoggerService;
+use Carbon\Exceptions\Exception;
 
 class MailController extends Controller
 {
@@ -11,6 +13,12 @@ class MailController extends Controller
     //Username: phpcst256@gmail.com
     //Password: adbsio3uiu9dnj2
     
+    protected $logger;
+    
+    public function __construct(ILoggerService $logger)
+    {
+        $this->logger = $logger;
+    }
     
     // Method to send basic email (html format)
     public function verificationEmail()
@@ -36,12 +44,18 @@ class MailController extends Controller
         //mail is the view we are using
         //$data is the array defining the body
         //You can pass the neccessary Variables with the use command
+        try {
         Mail::send('emailresponse', $data, function($message) use ($recipient, $email, $subject,
             $sender, $sender_email)
         {
             $message->from($sender_email, $sender);
             $message->to($email, $recipient)->subject($subject);
         });
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with sending an email: "+$e);
+        }
         
         //Echo basic email send message
         return view('verify');
@@ -53,8 +67,14 @@ class MailController extends Controller
         if (request()->get('code') == session()->get('code'))
         {
             $service = new BusinessService();
+            try {
             $id = $service->getUserId(session()->get('user'));
             $service->verifyUser($id);
+            }
+            catch (Exception $e)
+            {
+                $this->logger->error("Something went wrong with verifying a code for email: "+$e);
+            }
             $data =  [
                 'user' => session()->get('user'),
                 'message' => 'Account Verified', 

@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\UserModel;
 use App\Services\Business\BusinessService;
+use App\Services\Data\Utility\ILoggerService;
+use Carbon\Exceptions\Exception;
 //use App\Services\Business\PrivilegeCheck;
 
 class UserController extends BaseController
@@ -26,6 +28,13 @@ class UserController extends BaseController
     private $user;
 
     private $business;
+    
+    protected $logger;
+    
+    public function __construct(ILoggerService $logger)
+    {
+        $this->logger = $logger;
+    }
 
     // Method to log user in
     public function login()
@@ -39,6 +48,8 @@ class UserController extends BaseController
         $this->user->setEmail(request()->get('email'));
         $this->user->setPassword(request()->get('password'));
 
+        try {
+        
         $id = (int) $this->business->getUserID($this->user);
 
         // if 0, the user doesnt' exist
@@ -65,6 +76,11 @@ class UserController extends BaseController
             ];
             return view('auth\login')->with($data);
         }
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with logging in: "+$e);
+        }
     }
 
     // Method to register user, very similar to login
@@ -86,6 +102,7 @@ class UserController extends BaseController
             $isAdmin = true;
         }
 
+        try {
         // If they are added
         if ($this->business->addUser($this->user, $isAdmin)) {
             // Return success page
@@ -103,6 +120,11 @@ class UserController extends BaseController
             ];
             return view('auth/register')->with($data);
         }
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with registering user: "+$e);
+        }
     }
 
     // Function to delete user based on id
@@ -113,7 +135,13 @@ class UserController extends BaseController
         // grab user id
         $id = request()->get('id');
 
+        try {
         $this->business->deleteUser($id);
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with deleting user: "+$e);
+        }
         // Return deletion page
         return $this->manageRoles();
     }
@@ -126,7 +154,13 @@ class UserController extends BaseController
         // grab user id
         $id = request()->get('id');
 
+        try {
         $this->business->suspendUser($id);
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with suspending user: "+$e);
+        }
         // Return suspended page
         return $this->manageRoles();
     }
@@ -138,7 +172,13 @@ class UserController extends BaseController
 
         $id = request()->get('id');
 
+        try {
         $this->business->restoreUser($id);
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with restoring user: "+$e);
+        }
 
         return $this->manageRoles();
     }
@@ -179,9 +219,14 @@ class UserController extends BaseController
         $this->user->setWebLink(request()->get('website'));
         $this->user->setCity(request()->get('city'));
 
+        try {
         // Update user
         $this->business->updateUser($id, $this->user);
-
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with updating user: "+$e);
+        }
         session()->put('user', $this->user);
         
         $data = [
@@ -199,8 +244,13 @@ class UserController extends BaseController
         
         // Get all users that aren't admin
         $this->business = new BusinessService();
+        try {
         $users = $this->business->getAllUsers();
-
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with retrieving user roles: "+$e);
+        }
         // die(print_r($users));
 
         // Return view
@@ -226,7 +276,7 @@ class UserController extends BaseController
     }
     
     
-    //FUNCTIONS BELOW NOT IMPLEMENTED YET
+    //FUNCTIONS BELOW NOT IMPLEMENTED YET so no logging.
     public function displayUserRequest()
     {
         $id = request()->get('id');

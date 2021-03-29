@@ -10,11 +10,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
-use ErrorException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\PortfolioModel;
 use App\Services\Business\BusinessService;
+use App\Services\Data\Utility\ILoggerService;
+use Carbon\Exceptions\Exception;
 //use App\Services\Business\PrivilegeCheck;
 
 class PortfolioController extends BaseController
@@ -24,6 +25,12 @@ class PortfolioController extends BaseController
     private $user;
     private $business;
 
+    protected $logger;
+    
+    public function __construct(ILoggerService $logger)
+    {
+        $this->logger = $logger;
+    }
     
     //Function queries the database for the 
     public function search()
@@ -32,12 +39,18 @@ class PortfolioController extends BaseController
         $this->business = new BusinessService();
         $this->user = new PortfolioModel();
         
+        try {
         //Return type: array($userid => name)
         $users = $this->business->searchByName(request()->get('pattern')); 
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with searching a portfolio: "+$e);
+        }
         //Empty Array
         $portfolios = array();
         
+        try {
         //For each user with the specified name
         foreach ($users as $id => $user)
         {
@@ -46,6 +59,11 @@ class PortfolioController extends BaseController
             {
                 $portfolios[$portID] = [$user->getName(), $this->business->getPortfolioDetails($portID)];
             }
+        }
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with getting search results for portfolios: "+$e);
         }
         
         //Default is success
@@ -72,7 +90,7 @@ class PortfolioController extends BaseController
         //$this->pc = new PrivilegeCheck();
         $this->business = new BusinessService();
         
-        // Gets the session user
+        // Gets the session user, might be depreciated??
         if ($this->user = session()->get('user') == null)
         {
             return view("welcome");
@@ -81,16 +99,27 @@ class PortfolioController extends BaseController
         
         $userid = $this->business->getUserID(session()->get('user'));
         
+        try {
         $portfolioid = $this->business->getPortfolioID($userid);
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with getting portfolio id in viewPortfolio method.: "+$e);
+        }
 
+        try {
         if ($portfolioid == 0)
         {
             $this->business->createPortfolio($userid);
         }
-        
-        else 
+        else
         {
             $portdata = $this->business->getPortfolioDetails($portfolioid);
+        }
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with creating a new portfolio or getting portfolio details: "+$e);
         }
         
         $data = [ 
@@ -108,6 +137,7 @@ class PortfolioController extends BaseController
         
         $portfolioID = request()->get('portfolioID'); 
         
+        try {
         //Get Portfolio ID from the user
         //For each 100 + index set, add an education
         $index = 100;
@@ -168,6 +198,12 @@ class PortfolioController extends BaseController
             $message = "Portfolio Update Failed";
             $this->user = $this->business->getPortfolioDetails($portfolioID);
         }
+
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with updating user portfolio: "+$e);
+        }
         
         $data = [
             'portfolio' => $this->user,
@@ -192,11 +228,17 @@ class PortfolioController extends BaseController
         //Get portfolio id from request
         $portfolioID = request()->get('portfolioID');
         
+        try {
         //Add a blank history to the portfolio id
         $this->business->addHistory($portfolioID);
         
         //Get the updated portfolio
         $portfolio = $this->business->getPortfolioDetails($portfolioID);
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with adding history in portfolio: "+$e);
+        }
         
         //Pass back portfolio info
         $data = [
@@ -219,10 +261,16 @@ class PortfolioController extends BaseController
         //Get portfolio id from request
         $portfolioID = request()->get('portfolioID');
         
+        try {
         //Add a blank education to the portfolio id
         $this->business->addEducation($portfolioID);
         //Get the updated portfolio
         $portfolio = $this->business->getPortfolioDetails($portfolioID);
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with adding education in portfolio: "+$e);
+        }
         
         //Pass back portfolio info
         $data = [
@@ -242,10 +290,16 @@ class PortfolioController extends BaseController
         //Get portfolio id from request
         $portfolioID = request()->get('portfolioID');
         
+        try {
         //Add a blank skill to the portfolio id
         $this->business->addSkill($portfolioID);
         //Get the updated portfolio
         $portfolio = $this->business->getPortfolioDetails($portfolioID);
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with adding skills in portfolio: "+$e);
+        }
         
         //Pass back portfolio info
         $data = [

@@ -13,7 +13,9 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Services\Business\BusinessService;
+use App\Services\Data\Utility\ILoggerService;
 use Illuminate\Support\Facades\Bus;
+use Carbon\Exceptions\Exception;
 //use App\Services\Business\PrivilegeCheck;
 
 class AffinityController extends BaseController
@@ -25,7 +27,12 @@ class AffinityController extends BaseController
     
     //TODO: most of these functions should just be calling the show all function, 
     //since they return the same view with virtuall the same data
+    protected $logger;
     
+    public function __construct(ILoggerService $logger)
+    {
+        $this->logger = $logger;
+    }
     
     //Function to add an affinity group
     public function create()
@@ -39,13 +46,18 @@ class AffinityController extends BaseController
         
         //Default to success
         $message = 'Group Created!';
-          
+        
+        try { // trycatch for logging service
         //Create the affinity group and display error msg if neccessary
         if (!$this->businessService->createAffinityGroup($group, $description))
         {
             $message = 'Sorry, this group could not be created';
         }
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with creating an affinity group: "+$e);
+        }
         //Get all affinity groups and return to the all groups page
         $groups = $this->businessService->getAllAffinityGroups();
         
@@ -67,6 +79,7 @@ class AffinityController extends BaseController
         //Get the id from the request and the user id for the current session
         $id = request()->get('id');
         $user = session()->get('user');
+        try {
         $userID = $this->businessService->getUserID($user);
         
         //Get the group and all of its users
@@ -75,7 +88,11 @@ class AffinityController extends BaseController
         
         //Pass if the user is in the group
         $inGroup = $this->businessService->userInGroup($userID, $id);
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with viewing an affinity group: "+$e);
+        }
         //return the group view
         $data = [
             'group' => $group,
@@ -98,7 +115,7 @@ class AffinityController extends BaseController
         
         //Default is group deleted
         $message = "Group Deleted!";
-        
+        try {
         //Delete the group
         if (!$this->businessService->deleteGroup($id))
         {
@@ -107,7 +124,11 @@ class AffinityController extends BaseController
         
         //Get all new groups
         $groups = $this->businessService->getAllAffinityGroups();
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with deleting an affinity group: "+$e);
+        }
         //Return the all groups view
         $data = [
             'groups' => $groups,
@@ -131,6 +152,7 @@ class AffinityController extends BaseController
         //Default is the group is updated
         $message = "Group Updated!";
         
+        try {
         //Update details
         if (!$this->businessService->updateGroup($id, $newName, $newDesc))
         {
@@ -139,7 +161,11 @@ class AffinityController extends BaseController
         
         //Return all groups view
         $groups = $this->businessService->getAllAffinityGroups();
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with editing an affinity group: "+$e);
+        }
         $data = [
             'message' => $message,
             'groups' => $groups,
@@ -161,6 +187,8 @@ class AffinityController extends BaseController
         //Default is success
         $message = "Group Joined";
         
+        try 
+        {
         //Join the group
         if (!$this->businessService->joinGroup($userID, $groupID))
         {
@@ -169,7 +197,11 @@ class AffinityController extends BaseController
         
         //Return all groups view
         $groups = $this->businessService->getAllAffinityGroups();
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with joining an affinity group: "+$e);
+        }
         $data = [
             'message' => $message,
             'groups' => $groups,
@@ -191,6 +223,7 @@ class AffinityController extends BaseController
         //Default success
         $message = "You have left the group";
         
+        try {
         //Leave the group
         if (!$this->businessService->leaveGroup($userID, $groupID))
         {
@@ -199,7 +232,11 @@ class AffinityController extends BaseController
         
         //Get all groups
         $groups = $this->businessService->getAllAffinityGroups();
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with leaving an affinity group: "+$e);
+        }
         //return all groups page
         $data = [
             'message' => $message,
@@ -215,9 +252,15 @@ class AffinityController extends BaseController
         //$this->pc = new PrivilegeCheck();
         //Initialize business layer
         $this->businessService = new BusinessService();
-        
+        try
+        {
         //Get all groups and return the view
         $groups = $this->businessService->getAllAffinityGroups();
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with showing all affinity groups: "+$e);
+        }
         
         $data = [
             'groups' => $groups,
@@ -235,10 +278,14 @@ class AffinityController extends BaseController
         
         //Get the id from the request
         $id = request()->get('id');
-        
+        try {
         //Get group details
         $group = $this->businessService->getAffinityGroupById($id);
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with editing an affinity group: "+$e);
+        }
         //Pass data and return edit view
         $data = [
             'group' => $group,

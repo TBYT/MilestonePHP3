@@ -14,6 +14,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Models\JobModel;
 use App\Services\Business\BusinessService;
+use App\Services\Data\Utility\ILoggerService;
+use Carbon\Exceptions\Exception;
 //use App\Services\Business\PrivilegeCheck;
 
 class JobController extends BaseController
@@ -23,6 +25,12 @@ class JobController extends BaseController
     private $job;
     private $businessService;
     
+    protected $logger;
+    
+    public function __construct(ILoggerService $logger)
+    {
+        $this->logger = $logger;
+    }
 
     //Function to add a job
     public function add()
@@ -49,10 +57,16 @@ class JobController extends BaseController
         //default result is error
         $message = "Job could not be added. It may already exist"; 
         
+        try {
         //Try to add the job
         if ($this->businessService->addJob($this->job))
         {
             $message = "Job Added!";
+        }
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with adding a job: "+$e);
         }
         
         //Return view
@@ -66,7 +80,13 @@ class JobController extends BaseController
         //$this->pc = new PrivilegeCheck();
         
         $this->businessService = new BusinessService();
+        try {
         $jobs = $this->businessService->getAllJobs();
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with showing all jobs: "+$e);
+        }
         
         $data = ['jobs' => $jobs,];
         //die (print_r($data));
@@ -80,11 +100,16 @@ class JobController extends BaseController
     {
         //Initialize business service and delete job
         $this->businessService = new BusinessService();
+        try {
         $this->businessService->deleteJob(request()->get('id'));
         
         //Rerun the get all jobs page wtih updated list of jobs
         $jobs = $this->businessService->getAllJobs();
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with deleting a job: "+$e);
+        }
         $data = [
             'jobs' => $jobs,
             'message' => 'Job Deleted!'
@@ -118,12 +143,17 @@ class JobController extends BaseController
         $this->job->initialize($title, $company, $salary, $field,
             $skills, $experience, $location, $description);
         
+        try {
         //Run business layer function
         $success = $this->businessService->editJob($this->job, request()->get('id'));
         
         //Return the show all jobs page
         $jobs = $this->businessService->getAllJobs();
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with editing a job: "+$e);
+        }
         $message = 'Job could not be updated';
         if ($success)
         {
@@ -143,8 +173,13 @@ class JobController extends BaseController
     {
         //Initialize the business layer and job
         $this->businessService = new BusinessService();
+        try {
         $this->job = $this->businessService->getJob(request()->get('id'));
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with editing a job: "+$e);
+        }
         //Should use flash here, but I am lazy and don't have a lot of practice with it
         $data = [
             'job' => $this->job,
@@ -177,9 +212,14 @@ class JobController extends BaseController
             'location' => request()->get('location'),
         ];
         
+        try {
         //Run the search method
         $jobs = $this->businessService->searchJobs($properties);
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with searching a job: "+$e);
+        }
         $message = "Search Results";
         
         if (count($jobs) == 0)
@@ -204,8 +244,13 @@ class JobController extends BaseController
     {
         //Initialize the business layer and job
         $this->businessService = new BusinessService();
+        try {
         $this->job = $this->businessService->getJob(request()->get('id'));
-        
+        }
+        catch (Exception $e)
+        {
+            $this->logger->error("Something went wrong with viewing a job: "+$e);
+        }
         //Should use flash here, but I am lazy and don't have a lot of practice with it
         $data = [
             'job' => $this->job,
