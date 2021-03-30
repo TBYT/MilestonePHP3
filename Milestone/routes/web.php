@@ -134,6 +134,8 @@ Route::post('verifyuser', 'MailController@testCode');
 //Route for handling the addjob form
 Route::post('addjob', 'JobController@add');
 
+Route::post('apply', 'JobController@apply');
+
 Route::get('showalljobs', 'JobController@showAll');
 
 Route::post('deletejob', 'JobController@delete');

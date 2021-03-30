@@ -30,6 +30,7 @@
                         			
                         			<!-- Button to apply (does nothing currently) -->
                         			<form action="apply" method="post">
+                        			{{csrf_field()}}
                         				<input type="hidden" name="id" value="{{ $id }}"/>
                             			<div class="col-md-8 offset-md-4">
                                 			<input type="submit" value="Apply" class="btn btn-primary"/>

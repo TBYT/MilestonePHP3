@@ -9,7 +9,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use App\Services\Business\BusinessService;
-use App\Models\JobDTO;
+use App\Models\PortfolioDTO;
 
 class PortfolioAPIController extends BaseController
 {
@@ -31,7 +31,7 @@ class PortfolioAPIController extends BaseController
             $errorMessage = '';
         }
         
-        $dto = new JobDTO($errorCode, $errorMessage, print_r($portfolio));
+        $dto = new PortfolioDTO($errorCode, $errorMessage, print_r($portfolio));
         
         return $dto->jsonSerialize();
     }

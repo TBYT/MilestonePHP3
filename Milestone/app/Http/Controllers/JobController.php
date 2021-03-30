@@ -82,17 +82,29 @@ class JobController extends BaseController
         $this->businessService = new BusinessService();
         try {
         $jobs = $this->businessService->getAllJobs();
+        
+        $userID = $this->businessService->getUserID(session()->get('user'));
+        $appliedjobsids = $this->businessService->getAppliedJobs($userID);
+        
+        $appliedjobs = [];
+        foreach ($appliedjobsids as $id)
+        {
+            $appliedjobs[$id] = $this->businessService->getJob($id);
+        }
         }
         catch (Exception $e)
         {
             $this->logger->error("Something went wrong with showing all jobs: "+$e);
         }
         
-        $data = ['jobs' => $jobs,];
+        $data = [
+            'appliedjobs' => $appliedjobs,
+            'jobs' => $jobs,
+        ];
         //die (print_r($data));
         //Feels... Good. Man
         //return view('admin\alljobs')->with($data);
-        return view('admin\alljobs')->with($data);
+        return view('alljobs')->with($data);
     }
     
     //Function to delete a job
@@ -115,7 +127,7 @@ class JobController extends BaseController
             'message' => 'Job Deleted!'
         ];
         
-        return view('admin\alljobs')->with($data);
+        return view('alljobs')->with($data);
     }
     
     
@@ -149,6 +161,14 @@ class JobController extends BaseController
         
         //Return the show all jobs page
         $jobs = $this->businessService->getAllJobs();
+        $userID = $this->businessService->getUserID(session()->get('user'));
+        $appliedjobsids = $this->businessService->getAppliedJobs($userID);
+        
+        $appliedjobs = [];
+        foreach ($appliedjobsids as $id)
+        {
+            $appliedjobs[$id] = $this->businessService->getJob($id);
+        }
         }
         catch (Exception $e)
         {
@@ -161,11 +181,12 @@ class JobController extends BaseController
         }
         
         $data = [
+            'appliedjobs' => $appliedjobs,
             'jobs' => $jobs,
             'message' => $message
         ];
         
-        return view('admin\alljobs')->with($data);
+        return view('alljobs')->with($data);
     }
     
     //Function to edit a job
@@ -275,5 +296,21 @@ class JobController extends BaseController
         
         //Run Data Validation Rules
         $this->validate($request, $rules);
+    }
+    
+    public function apply()
+    {
+        $this->businessService = new BusinessService();
+        $jobID = request()->get('id');
+        $userID = $this->businessService->getUserID(session()->get('user'));
+        
+        //apply to the job
+        if ($this->businessService->jobApply($userID, $jobID))
+        {
+            //die("success");
+        }
+        
+        //Return all jobs view
+        return $this->showAll();
     }
 }

@@ -28,8 +28,8 @@ class JobDataService
     {
         //Craft sql
         $sql = "INSERT INTO job
-                (title, company, salary, field, skills, 
-                    experience, location, description) 
+                (title, company, salary, field, skills,
+                    experience, location, description)
                 VALUES ('{$job->getTitle()}', '{$job->getCompany()}', '{$job->getSalary()}',
                     '{$job->getField()}', '{$job->getSkills()}', '{$job->getExperience()}',
                     '{$job->getLocation()}', '{$job->getDescription()}')";
@@ -105,7 +105,7 @@ class JobDataService
         
         $job = new JobModel();
         
-        //While statement is unneccessary because there is 
+        //While statement is unneccessary because there is
         //Only one result, but functions the same
         while ($row = $result->fetch_assoc())
         {
@@ -131,7 +131,7 @@ class JobDataService
      */
     public function updateJob(JobModel $job, int $id)
     {
-        $sql = "UPDATE job 
+        $sql = "UPDATE job
                 SET title = '{$job->getTitle()}', company = '{$job->getcompany()}',
                 salary = '{$job->getSalary()}', field = '{$job->getField()}',
                 skills = '{$job->getSkills()}', experience = '{$job->getExperience()}',
@@ -169,20 +169,58 @@ class JobDataService
             //Initialize new job and its fields
             
             
-                $job = new JobModel();
-                $job->setTitle($row['title']);
-                $job->setField($row['field']);
-                $job->setSkills($row['skills']);
-                $job->setExperience($row['experience']);
-                $job->setLocation($row['location']);
-                $job->setDescription($row['description']);
-                $job->setCompany($row['company']);
-                $job->setSalary($row['salary']);
-                
-                //Put the job into the array with its id as an index
-                $jobs[$row['id']] = $job;
-        }
+            $job = new JobModel();
+            $job->setTitle($row['title']);
+            $job->setField($row['field']);
+            $job->setSkills($row['skills']);
+            $job->setExperience($row['experience']);
+            $job->setLocation($row['location']);
+            $job->setDescription($row['description']);
+            $job->setCompany($row['company']);
+            $job->setSalary($row['salary']);
             
+            //Put the job into the array with its id as an index
+            $jobs[$row['id']] = $job;
+        }
+        
+        //Free the result and return the array
+        mysqli_free_result($result);
+        
+        return $jobs;
+    }
+    
+    public function apply(int $userID, int $jobid)
+    {
+        $sql = "INSERT INTO application (`user`, `job`)
+                    VALUES('$userID', '$jobid')";
+        
+        //die($sql);
+        
+        $this->conn->query($sql);
+        //If the number of rows affected is greater than 0, return true
+        $success = $this->conn->affected_rows > 0;
+        return $success;
+    }
+    
+    public function appliedJobs($id)
+    {
+        $sql = "SELECT * FROM application
+                    WHERE `user` = '$id'";
+        
+        $result = $this->conn->query($sql);
+        
+        $jobs = array();
+        
+        $counter = 0;
+        while ($row = $result->fetch_assoc())
+        {
+            //$appid = $row['id'];
+            //$user = $row['user'];
+            $job = $row['job'];
+            //$details = [ $user, $job ];
+            $jobs[$counter] = $job;
+            $counter++;
+        }
         //Free the result and return the array
         mysqli_free_result($result);
         
