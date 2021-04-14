@@ -80,17 +80,11 @@ class JobController extends BaseController
         //$this->pc = new PrivilegeCheck();
         
         $this->businessService = new BusinessService();
-        try {
-        $jobs = $this->businessService->getAllJobs();
-        
-        $userID = $this->businessService->getUserID(session()->get('user'));
-        $appliedjobsids = $this->businessService->getAppliedJobs($userID);
-        
-        $appliedjobs = [];
-        foreach ($appliedjobsids as $id)
+        try
         {
-            $appliedjobs[$id] = $this->businessService->getJob($id);
-        }
+        $jobs = $this->businessService->getAllJobs();
+        $appliedjobs = $this->showAllApplied();
+        
         }
         catch (Exception $e)
         {
@@ -107,24 +101,43 @@ class JobController extends BaseController
         return view('alljobs')->with($data);
     }
     
+    //utility method to get all applied jobs whenever we return to the alljobs page.
+    public function showAllApplied()
+    {
+        $userID = $this->businessService->getUserID(session()->get('user'));
+        $appliedjobsids = $this->businessService->getAppliedJobs($userID);
+        
+        $appliedjobs = [];
+        foreach ($appliedjobsids as $id)
+        {
+            $appliedjobs[$id] = $this->businessService->getJob($id);
+        }
+        return $appliedjobs;
+    }
+    
     //Function to delete a job
     public function delete()
     {
         //Initialize business service and delete job
         $this->businessService = new BusinessService();
-        try {
+        try 
+        {
         $this->businessService->deleteJob(request()->get('id'));
         
         //Rerun the get all jobs page wtih updated list of jobs
         $jobs = $this->businessService->getAllJobs();
+        
+        $appliedjobs = $this->showAllApplied();
         }
         catch (Exception $e)
         {
             $this->logger->error("Something went wrong with deleting a job: "+$e);
         }
+        
         $data = [
             'jobs' => $jobs,
-            'message' => 'Job Deleted!'
+            'message' => 'Job Deleted!',
+            'appliedjobs' => $appliedjobs,
         ];
         
         return view('alljobs')->with($data);
@@ -161,14 +174,7 @@ class JobController extends BaseController
         
         //Return the show all jobs page
         $jobs = $this->businessService->getAllJobs();
-        $userID = $this->businessService->getUserID(session()->get('user'));
-        $appliedjobsids = $this->businessService->getAppliedJobs($userID);
-        
-        $appliedjobs = [];
-        foreach ($appliedjobsids as $id)
-        {
-            $appliedjobs[$id] = $this->businessService->getJob($id);
-        }
+        $appliedjobs = $this->showAllApplied();
         }
         catch (Exception $e)
         {
@@ -194,8 +200,9 @@ class JobController extends BaseController
     {
         //Initialize the business layer and job
         $this->businessService = new BusinessService();
-        try {
-        $this->job = $this->businessService->getJob(request()->get('id'));
+        try 
+        {
+            $this->job = $this->businessService->getJob(request()->get('id'));
         }
         catch (Exception $e)
         {
@@ -233,7 +240,8 @@ class JobController extends BaseController
             'location' => request()->get('location'),
         ];
         
-        try {
+        try 
+        {
         //Run the search method
         $jobs = $this->businessService->searchJobs($properties);
         }
