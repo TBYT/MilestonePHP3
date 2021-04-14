@@ -37,70 +37,47 @@
                         			{{csrf_field()}}
                         			
                         			<!-- Begin Title -->
-                        			<div>
-                            			<?php if ($errors->first('title') != null) echo "<b class=\"center\">" . 
-                            			     $errors->first('title') . "</b><br>"; ?>
-                        			</div>
+<!--                         			<div> -->
+                            			<?php //if ($errors->first('title') != null) echo "<b class=\"center\">" . $errors->first('title') . "</b><br>"; ?>
+<!--                         			</div> -->
                         			<label for="title" class="col-md-4 col-form-label text-md-right">Title</label>
-                        			<input type="text" name="title"/><br>
+                        			<input type="text" name="title" required minlength="6" maxlength="30" /><br>
                         			
                         			
                         			<!-- Begin Company -->
-                        			<div>
-                            			<?php if ($errors->first('company') != null) echo "<b class=\"center\">" 
-                                            . $errors->first('company') . "</b><br>"; ?>
-                        			</div>
+                        			
                         			<label for="company" class="col-md-4 col-form-label text-md-right">Company</label>
-                        			<input type="text" name="company"/><br>
+                        			<input type="text" name="company" required minlength="3" maxlength="30" /><br>
                         			
                         			<!-- Begin Salary -->
-                        			<div>
-                            			<?php if ($errors->first('salary') != null) echo "<b class=\"center\">" 
-                                            . $errors->first('salary') . "</b><br>"; ?>
-                        			</div>
+                        			
                         			<label for="salary" class="col-md-4 col-form-label text-md-right">Salary</label>
-                        			<input type="text" name="salary"/><br>
+                        			<input type="number" name="salary" required min="10000" max="1000000" /><br>
                         			
                         			<!-- Begin Field -->
-                        			<div>
-                            			<?php if ($errors->first('field') != null) echo "<b class=\"center\">" 
-                                            . $errors->first('field') . "</b><br>"; ?>
-                        			</div>
+                        			
                         			<label for="field" class="col-md-4 col-form-label text-md-right">Job Field</label>
-                        			<input type="text" name="field"/><br>
+                        			<input type="text" name="field" required minlength="3" maxlength="30" /><br>
                         			
                         			<!-- Begin Skills -->
-                        			<div>
-                            			<?php if ($errors->first('skills') != null) echo "<b class=\"center\">" 
-                                            . $errors->first('skills') . "</b><br>"; ?>
-                        			</div>
+                        			
                         			<label for="skills" class="col-md-4 col-form-label text-md-right">Skills Required</label>
-                        			<input type="text" name="skills"/><br>
+                        			<input type="text" name="skills" required minlength="3" maxlength="30" /><br>
                         			
                         			<!-- Begin Experience -->
-                        			<div>
-                            			<?php if ($errors->first('experience') != null) echo "<b class=\"center\">" 
-                                            . $errors->first('experience') . "</b><br>"; ?>
-                        			</div>
+                        			
                         			<label for="experience" class="col-md-4 col-form-label text-md-right">Experience Required</label>
-                        			<input type="text" name="experience"/><br>
+                        			<input type="text" name="experience" required minlength="3" maxlength="30" /><br>
                         			
                         			<!-- Begin Location -->
-                        			<div>
-                            			<?php if ($errors->first('location') != null) echo "<b class=\"center\">" 
-                                            . $errors->first('location') . " </b><br>"; ?>
-                        			</div>
+                        			
                         			<label for="location" class="col-md-4 col-form-label text-md-right">Location</label>
-                        			<input type="text" name="location"/><br>
+                        			<input type="text" name="location" required minlength="5" maxlength="50" /><br>
                         		
                         			<!-- Begin Description -->	
-                        			<!-- Had to edit the css for this to make the label top-align -->
-                        			<div>
-                            			<?php if ($errors->first('description') != null) echo "<b class=\"center\">" 
-                                            . $errors->first('description') . "</b><br>"; ?>
-                        			</div>
+                        			
                         			<label for="description" class="col-md-4 col-form-label text-md-right align-top">Description</label>
-                        			<textarea rows="10" col="20" name="description"></textarea><br><br>	
+                        			<textarea rows="10" col="20" name="description" required minlength="10" maxlength="250" ></textarea><br><br>	
                         			
                         			<!-- Submit Button -->
                         			<div class="col-md-8 offset-md-4">

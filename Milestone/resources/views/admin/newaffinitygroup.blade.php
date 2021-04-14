@@ -28,12 +28,12 @@
                         			
                         			<!-- Begin Title -->
                         			<label for="name" class="col-md-4 col-form-label text-md-right">Title</label>
-                        			<input type="text" name="name" required/><br>
+                        			<input type="text" name="name" required minlength="4" maxlength="30"/><br>
                         		
                         			<!-- Begin Description -->	
                         			<!-- Had to edit the css for this to make the label top-align -->
                         			<label for="description" class="col-md-4 col-form-label text-md-right align-top">Description</label>
-                        			<textarea rows="10" col="20" name="description" required></textarea><br><br>	
+                        			<textarea rows="10" col="20" name="description" required maxlength="240"></textarea><br><br>	
                         			
                         			<!-- Submit Button -->
                         			<div class="col-md-8 offset-md-4">

@@ -39,7 +39,7 @@ class JobController extends BaseController
         $this->businessService = new BusinessService();
         $this->job = new JobModel();
         
-        $this->validateForm(request());
+        //$this->validateForm(request());
         
         //Fill job data
         $title = request()->get('title');
@@ -140,7 +140,7 @@ class JobController extends BaseController
         $this->job = new JobModel();
         
         //Validate 
-        $this->validateForm(request());
+        //$this->validateForm(request());
         
         //Fill job details
         $title = request()->get('title');
@@ -284,14 +284,14 @@ class JobController extends BaseController
     private function validateForm(Request $request)
     {
         $rules = [
-            'title' => 'Required | Between: 8,30 | Alpha',
-            'company' => 'Required | Between: 4, 10',
+            'title' => 'Required | Between: 6,30 | Alpha_Dash',
+            'company' => 'Required | Between: 3, 30 | Alpha_Num',
             'salary' => 'Required | Alpha_Num | Between: 4, 7',
-            'field' => 'Required | Between: 5,30 | Alpha',
-            'skills' => 'Required | Between: 8,30 | Alpha',
-            'experience' => 'Required | Between: 2,20| Alpha_Num',
-            'location' => 'Required | Between: 5,30 | Alpha',
-            'description' => 'Required | Between: 10,250 | Alpha',
+            'field' => 'Required | Between: 3,30 | Alpha_Dash',
+            'skills' => 'Required | Between: 3,30 | Alpha_Dash',
+            'experience' => 'Required | Between: 2,30| Alpha_Num',
+            'location' => 'Required | Between: 5,50 | Alpha_Dash',
+            'description' => 'Required | Between: 10,250 | Alpha_Num',
         ];
         
         //Run Data Validation Rules

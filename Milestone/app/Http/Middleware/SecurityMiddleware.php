@@ -24,7 +24,7 @@ class SecurityMiddleware
         
         //Step 2: Run the business rules that check for the URI's that you do not need to secure.
         $secureCheck = true;
-        if((session()->get('user') == true) || $request->is('/') || $request->is('doLogin') || $request->is('suspended') || $request->is('register') || $request->is('login') 
+        if((session()->get('user') == true) || $request->is('/') || $request->is('doLogin') || $request->is('suspended') || $request->is('contact') || $request->is('register') || $request->is('login') 
             || $request->is('jobrest/*') || $request->is('jobrest') || $request->is('portfoliorest/*'))
         {
             $secureCheck = false;
