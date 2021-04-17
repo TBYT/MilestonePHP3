@@ -107,12 +107,14 @@ class PortfolioController extends BaseController
             $this->logger->error("Something went wrong with getting portfolio id in viewPortfolio method.: "+$e);
         }
 
-        try {
-        if ($portfolioid == 0)
+        try 
         {
-            $this->business->createPortfolio($userid);
-        }
+            if ($portfolioid == 0)
+            {
+                $this->business->createPortfolio($userid);
+            }
         $portdata = $this->business->getPortfolioDetails($portfolioid);
+        }
         catch (Exception $e)
         {
             $this->logger->error("Something went wrong with creating a new portfolio or getting portfolio details: "+$e);
