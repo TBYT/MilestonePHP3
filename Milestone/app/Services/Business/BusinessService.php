@@ -888,7 +888,6 @@ class BusinessService
         //get jobs user applied to
         $jobs = $jobsDAO->appliedJobs($id);
         $dbConn->closeConnection();
-        
         return $jobs;
     }
     
