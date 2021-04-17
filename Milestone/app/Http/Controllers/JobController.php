@@ -122,7 +122,14 @@ class JobController extends BaseController
         $this->businessService = new BusinessService();
         try 
         {
-        $this->businessService->deleteJob(request()->get('id'));
+            if ($this->businessService->deleteJob(request()->get('id')))
+            {
+                $message = 'Job Deleted!';
+            }
+            else
+            {
+                $message = 'Something went wrong with deleting a job';
+            }
         
         //Rerun the get all jobs page wtih updated list of jobs
         $jobs = $this->businessService->getAllJobs();
@@ -136,7 +143,7 @@ class JobController extends BaseController
         
         $data = [
             'jobs' => $jobs,
-            'message' => 'Job Deleted!',
+            'message' => $message,
             'appliedjobs' => $appliedjobs,
         ];
         
@@ -171,7 +178,6 @@ class JobController extends BaseController
         try {
         //Run business layer function
         $success = $this->businessService->editJob($this->job, request()->get('id'));
-        
         //Return the show all jobs page
         $jobs = $this->businessService->getAllJobs();
         $appliedjobs = $this->showAllApplied();
