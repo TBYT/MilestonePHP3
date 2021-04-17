@@ -89,6 +89,8 @@ class JobDataService
                 WHERE id = '$id'";
         
         $this->conn->query($sql);
+        
+        return $this->conn->affected_rows > 0;
     }
     
     /**
@@ -191,7 +193,7 @@ class JobDataService
     
     public function apply(int $userID, int $jobid)
     {
-        $sql = "INSERT INTO application (`user`, `job`)
+        $sql = "INSERT INTO application (`user_id`, `job_id`)
                     VALUES('$userID', '$jobid')";
         
         //die($sql);
@@ -205,7 +207,7 @@ class JobDataService
     public function appliedJobs($id)
     {
         $sql = "SELECT * FROM application
-                    WHERE `user` = '$id'";
+                    WHERE `user_id` = '$id'";
         
         $result = $this->conn->query($sql);
         
@@ -214,11 +216,7 @@ class JobDataService
         $counter = 0;
         while ($row = $result->fetch_assoc())
         {
-            //$appid = $row['id'];
-            //$user = $row['user'];
-            $job = $row['job'];
-            //$details = [ $user, $job ];
-            $jobs[$counter] = $job;
+            $jobs[$counter] = $row['job_id'];
             $counter++;
         }
         //Free the result and return the array
