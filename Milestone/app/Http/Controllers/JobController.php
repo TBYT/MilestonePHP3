@@ -107,7 +107,7 @@ class JobController extends BaseController
         $userID = $this->businessService->getUserID(session()->get('user'));
         $appliedjobsids = $this->businessService->getAppliedJobs($userID);
         
-        $appliedjobs = [];
+        $appliedjobs = array();
         foreach ($appliedjobsids as $id)
         {
             $appliedjobs[$id] = $this->businessService->getJob($id);
@@ -274,7 +274,30 @@ class JobController extends BaseController
         //Initialize the business layer and job
         $this->businessService = new BusinessService();
         try {
-        $this->job = $this->businessService->getJob(request()->get('id'));
+            //Get the current job that is being displayed by its id
+            $this->job = $this->businessService->getJob(request()->get('id'));
+            
+            //If the user has applied for the job, don't show the apply button
+            //First find the user id from the user saved in session var
+            $user_id = $this->businessService->getUserID(session()->get('user'));
+            //Next get a list of all applied jobs for that user (only need ids, otherwise would call the 
+            //showAllApplications() in this class)
+            $appliedJobs = $this->businessService->getAppliedJobs($user_id);
+            //Test to make sure that the list of applications was called
+            //die(print_r($appliedJobs));'
+            //die(request()->get('id') . '\t');
+            //Default applied status is false, will display button
+            $isApplied = false;
+            //Finally, search the list of applied jobs for the id of the current job
+            //TODO: maybe give status update in the view('viewjob.blade.php')?
+            foreach ($appliedJobs as $id)
+            {
+                if ($id == request()->get('id'))
+                {
+                    $isApplied = true;
+                    break;
+                }
+            }
         }
         catch (Exception $e)
         {
@@ -283,7 +306,8 @@ class JobController extends BaseController
         //Should use flash here, but I am lazy and don't have a lot of practice with it
         $data = [
             'job' => $this->job,
-            'id' => request()->get('id')
+            'id' => request()->get('id'),
+            'isApplied' => $isApplied
         ];
         
         return view('viewjob')->with($data);
