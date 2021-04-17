@@ -105,13 +105,14 @@ class JobDataService
         
         $result = $this->conn->query($sql);
         
-        $job = new JobModel();
+        $job = false;
         
         //While statement is unneccessary because there is
         //Only one result, but functions the same
         while ($row = $result->fetch_assoc())
         {
             //Intialize job fields
+            $job = new JobModel();
             $job->setTitle($row['title']);
             $job->setCompany($row['company']);
             $job->setSalary($row['salary']);
