@@ -280,9 +280,9 @@ class BusinessService
     {
         $dbAccess = new DataAccess($this->dbname);
         $conn = $dbAccess->getConnection();
-        $success = $jobsdao = new JobDataService($conn);
+        $jobsdao = new JobDataService($conn);
         
-        $jobsdao->deleteJob($id);
+        $success = $jobsdao->deleteJob($id);
         $dbAccess->closeConnection();
         
         return $success;
