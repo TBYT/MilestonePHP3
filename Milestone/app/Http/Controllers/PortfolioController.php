@@ -112,6 +112,7 @@ class PortfolioController extends BaseController
             if ($portfolioid == 0)
             {
                 $this->business->createPortfolio($userid);
+                $portfolioid = $this->business->getPortfolioID($userid);
             }
         $portdata = $this->business->getPortfolioDetails($portfolioid);
         }
