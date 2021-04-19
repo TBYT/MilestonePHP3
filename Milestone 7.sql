@@ -201,6 +201,27 @@ CREATE TABLE IF NOT EXISTS `dbcst256`.`skills` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
+                                       
+-- -----------------------------------------------------
+-- Table `dbcst256`.`usergroups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dbcst256`.`usergroups` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `affinity_id` INT(11) NULL DEFAULT NULL,
+  `users_id` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `affinity_fk_idx` (`affinity_id` ASC),
+  INDEX `users_fk_idx` (`users_id` ASC),
+  CONSTRAINT `affinity_fk`
+    FOREIGN KEY (`affinity_id`)
+    REFERENCES `dbcst256`.`affinity` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `users_fk`
+    FOREIGN KEY (`users_id`)
+    REFERENCES `dbcst256`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
